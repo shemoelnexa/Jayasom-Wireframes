@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 16 33% 93%;
+    --foreground: 300 2% 27%;
+    --card: 16 33% 93%;
+    --card-foreground: 300 2% 27%;
+    --popover: 16 33% 93%;
+    --popover-foreground: 300 2% 27%;
+    --primary: 300 2% 27%;
+    --primary-foreground: 16 33% 93%;
+    --secondary: 16 25% 88%;
+    --secondary-foreground: 300 2% 27%;
+    --muted: 16 20% 86%;
+    --muted-foreground: 300 2% 40%;
+    --accent: 16 20% 86%;
+    --accent-foreground: 300 2% 27%;
+    --destructive: 300 2% 35%;
+    --destructive-foreground: 16 33% 93%;
+    --border: 300 2% 60%;
+    --input: 300 2% 60%;
+    --ring: 300 2% 27%;
+    --radius: 0rem;
+    --wire-placeholder: 16 20% 88%;
+    --wire-line: 300 2% 55%;
+    --wire-dark: 300 2% 30%;
+    --wire-mid: 300 2% 45%;
+
+    --sidebar-background: 16 30% 91%;
+    --sidebar-foreground: 300 2% 32%;
+    --sidebar-primary: 300 2% 27%;
+    --sidebar-primary-foreground: 16 33% 93%;
+    --sidebar-accent: 16 25% 88%;
+    --sidebar-accent-foreground: 300 2% 27%;
+    --sidebar-border: 300 2% 65%;
+    --sidebar-ring: 300 2% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Century Gothic', 'Didact Gothic', 'Futura', 'Trebuchet MS', Arial, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Century Gothic', 'Didact Gothic', 'Futura', 'Trebuchet MS', Arial, sans-serif;
+  }
+}
