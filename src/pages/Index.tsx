@@ -18,6 +18,7 @@ const pages = [
   { path: "/treatments", label: "Treatments Listing" },
   { path: "/treatments/deep-tissue-restoration", label: "Treatment Details" },
   { path: "/retreats/restore-rebalance", label: "Retreat Details" },
+  { path: "/retreats-v2/holistic-detox", label: "Retreat Details V2" },
   { path: "/wellness-advisor/dr-sarah-mitchell", label: "Expert & Specialist Profile" },
   { path: "/digital-brochure", label: "Digital Brochure" },
 ];

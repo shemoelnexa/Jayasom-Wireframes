@@ -23,6 +23,7 @@ import MasterplansSitemaps from "./pages/MasterplansSitemaps.tsx";
 import TreatmentsListing from "./pages/TreatmentsListing.tsx";
 import TreatmentDetails from "./pages/TreatmentDetails.tsx";
 import DigitalBrochure from "./pages/DigitalBrochure.tsx";
+import RetreatDetailsV2 from "./pages/RetreatDetailsV2.tsx";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/journals-stories" element={<JournalsStories />} />
           <Route path="/retreat-finder" element={<RetreatFinder />} />
           <Route path="/retreats/:id" element={<RetreatDetails />} />
+          <Route path="/retreats-v2/:id" element={<RetreatDetailsV2 />} />
           <Route path="/activity-details" element={<ActivityDetails />} />
           <Route path="/wellness-advisor" element={<WellnessAdvisor />} />
           <Route path="/wellness-advisor/:id" element={<WellnessAdvisorProfile />} />
