@@ -5,16 +5,18 @@ import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
 import WireButton from "@/components/wireframe/WireButton";
 import { rooms } from "@/data/rooms";
-
-const familyRoomIds = ["family-residence", "oasis-pool-villa", "garden-villa", "five-bedroom-estate"];
+import { Users, Baby } from "lucide-react";
 
 const RoomsDetails = () => {
   const { id } = useParams();
   const room = rooms.find((r) => r.id === id) || rooms[0];
-  const isFamily = familyRoomIds.includes(room.id);
+  const isFamily = room.childrenAllowed;
   const isFiveBed = room.beds === "5 Beds" || room.id === "five-bedroom-estate";
 
   const [bookingStep, setBookingStep] = useState(1);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
+  const [childAges, setChildAges] = useState<number[]>([]);
 
   return (
     <WireLayout>
@@ -61,6 +63,52 @@ const RoomsDetails = () => {
               <div className={`flex-1 h-1 ${bookingStep >= 2 ? "bg-foreground" : "bg-border"}`} />
             </div>
 
+            {/* Guests & Children Selector */}
+            <div className="border border-border p-4 mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="flex items-center gap-2 text-xs font-bold text-foreground">
+                  <Users className="w-3.5 h-3.5" /> Adults
+                </label>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setAdults(Math.max(1, adults - 1))} className="w-7 h-7 border border-border text-xs text-foreground flex items-center justify-center hover:bg-muted">−</button>
+                  <span className="text-xs text-foreground w-4 text-center">{adults}</span>
+                  <button onClick={() => setAdults(Math.min(room.maxGuests, adults + 1))} className="w-7 h-7 border border-border text-xs text-foreground flex items-center justify-center hover:bg-muted">+</button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-3">
+                <label className="flex items-center gap-2 text-xs font-bold text-foreground">
+                  <Baby className="w-3.5 h-3.5" /> Children (under 16)
+                </label>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => { setChildren(Math.max(0, children - 1)); setChildAges((prev) => prev.slice(0, -1)); }} className="w-7 h-7 border border-border text-xs text-foreground flex items-center justify-center hover:bg-muted">−</button>
+                  <span className="text-xs text-foreground w-4 text-center">{children}</span>
+                  <button onClick={() => { const next = Math.min(room.maxGuests - adults, children + 1); setChildren(next); setChildAges((prev) => [...prev, 5]); }} className="w-7 h-7 border border-border text-xs text-foreground flex items-center justify-center hover:bg-muted">+</button>
+                </div>
+              </div>
+
+              {children > 0 && (
+                <div className="border-t border-border pt-3 space-y-2">
+                  {childAges.slice(0, children).map((age, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <span className="text-[10px] text-muted-foreground">Child {i + 1} age</span>
+                      <select
+                        value={age}
+                        onChange={(e) => setChildAges((prev) => { const next = [...prev]; next[i] = Number(e.target.value); return next; })}
+                        className="border border-border px-2 py-1 text-[10px] text-foreground bg-background"
+                      >
+                        {Array.from({ length: 16 }, (_, a) => (
+                          <option key={a} value={a}>{a < 1 ? "Under 1" : `${a} years`}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <p className="text-[10px] text-muted-foreground mt-3">Max {room.maxGuests} guests · {room.numRooms} {room.numRooms === 1 ? "bedroom" : "bedrooms"}</p>
+            </div>
+
             {isFamily ? (
               <>
                 {bookingStep === 1 && (
@@ -73,10 +121,6 @@ const RoomsDetails = () => {
                     <div>
                       <label className="text-xs text-muted-foreground block mb-1">Check-out</label>
                       <div className="border border-border px-3 py-2 text-xs text-muted-foreground">Select date</div>
-                    </div>
-                    <div>
-                      <label className="text-xs text-muted-foreground block mb-1">Guests</label>
-                      <div className="border border-border px-3 py-2 text-xs text-muted-foreground">2 Adults, 2 Children</div>
                     </div>
                     <button onClick={() => setBookingStep(2)} className="border border-foreground px-6 py-3 text-xs tracking-wider text-foreground w-full">Next: Add Retreat →</button>
                   </div>
@@ -107,10 +151,6 @@ const RoomsDetails = () => {
                   <div className="space-y-4 mb-6">
                     <p className="text-xs text-foreground font-bold">Step 2: Confirm Room</p>
                     <div className="border border-border px-3 py-2 text-xs text-muted-foreground">{room.name} selected</div>
-                    <div>
-                      <label className="text-xs text-muted-foreground block mb-1">Guests</label>
-                      <div className="border border-border px-3 py-2 text-xs text-muted-foreground">2 Adults</div>
-                    </div>
                     <WireButton>Check Availability</WireButton>
                     <button onClick={() => setBookingStep(1)} className="text-xs text-muted-foreground underline block">← Back to retreat</button>
                   </div>

@@ -85,9 +85,52 @@ const CulinaryNourishment = () => {
         </div>
       </WireSection>
 
-      <WireSection dark title="Personalised Nutrition Plans" subtitle="Work with our in-house nutritionist to create a bespoke dining plan aligned with your wellness objectives.">
-        <WireButton dark>Speak to a nutritionist</WireButton>
-      </WireSection>
+      <section className="bg-foreground text-background px-8 py-16">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+          {/* Left — copy */}
+          <div>
+            <p className="text-xs tracking-widest uppercase mb-3 text-background/60">Personalised Nutrition</p>
+            <h2 className="text-2xl font-light mb-4 text-background">Personalised Nutrition Plans</h2>
+            <p className="text-sm text-background/70 leading-relaxed">Work with our in-house nutritionist to create a bespoke dining plan aligned with your wellness objectives. Whether you're managing a health condition, optimising performance, or simply looking to eat better — we're here to guide you.</p>
+          </div>
+
+          {/* Right — always-visible form */}
+          <div className="border border-background/30 p-6">
+            <p className="text-sm font-bold text-background mb-4">Speak to a Nutritionist</p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[10px] text-background/70 block mb-1">First name</label>
+                  <div className="border border-background/30 bg-transparent px-3 py-2 text-xs text-background/50">Enter first name</div>
+                </div>
+                <div>
+                  <label className="text-[10px] text-background/70 block mb-1">Last name</label>
+                  <div className="border border-background/30 bg-transparent px-3 py-2 text-xs text-background/50">Enter last name</div>
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] text-background/70 block mb-1">Email</label>
+                <div className="border border-background/30 bg-transparent px-3 py-2 text-xs text-background/50">your@email.com</div>
+              </div>
+              <div>
+                <label className="text-[10px] text-background/70 block mb-1">Dietary requirements or goals</label>
+                <div className="border border-background/30 bg-transparent px-3 py-2 text-xs text-background/50 h-20">Tell us about your dietary needs, allergies, or wellness nutrition goals...</div>
+              </div>
+              <div>
+                <label className="text-[10px] text-background/70 block mb-1">Preferred consultation type</label>
+                <div className="flex gap-3">
+                  {["Video call", "Phone", "In person"].map((opt) => (
+                    <div key={opt} className="border border-background/30 px-3 py-2 text-xs text-background/70 cursor-pointer hover:border-background">{opt}</div>
+                  ))}
+                </div>
+              </div>
+              <button className="border border-background px-6 py-3 text-xs tracking-wider text-background w-full hover:bg-background hover:text-foreground transition-colors mt-2">
+                Send message
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <WireSection label="From Our Garden" title="Seed to Plate" subtitle="Jayasom's on-site organic gardens supply seasonal herbs, vegetables, and edible flowers directly to our kitchens — reducing food miles to mere footsteps.">
         <WireImage className="h-72" label="Organic Garden" />
