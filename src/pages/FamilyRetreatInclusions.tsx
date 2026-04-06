@@ -465,73 +465,148 @@ const FamilyRetreatInclusions = () => {
   }, {});
 
   const handlePrint = () => {
-    const content = printRef.current;
-    if (!content) return;
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
+
+    const sharedStyles = `
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Century Gothic', 'Futura', Arial, sans-serif; color: #444; padding: 40px; line-height: 1.5; }
+      h1 { font-size: 24px; font-weight: 300; margin-bottom: 4px; }
+      h2 { font-size: 14px; font-weight: 400; color: #888; margin-bottom: 24px; }
+      h3 { font-size: 16px; font-weight: 400; margin-bottom: 12px; }
+      .header { border-bottom: 1px solid #ddd; padding-bottom: 16px; margin-bottom: 24px; }
+      .header small { color: #999; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
+      table { width: 100%; border-collapse: collapse; }
+      th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; padding: 8px 12px; border-bottom: 2px solid #ddd; }
+      td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 12px; vertical-align: top; }
+      .time { color: #888; white-space: nowrap; width: 110px; }
+      .shared { background: #f9f6f3; }
+      .shared-badge { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #999; background: #eee; padding: 2px 8px; border-radius: 10px; }
+      .category { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #aaa; display: block; margin-top: 2px; }
+      .age { font-size: 9px; color: #aaa; background: #f0ece8; padding: 2px 6px; border-radius: 8px; display: inline-block; margin-top: 4px; }
+      .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 10px; color: #aaa; }
+      .legend { display: flex; gap: 24px; margin-top: 8px; }
+      .legend span { font-size: 10px; color: #888; }
+      .pair-card { border: 1px solid #ddd; margin-bottom: 16px; page-break-inside: avoid; }
+      .pair-header { background: #f5f2ef; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #666; }
+      .pair-body { display: flex; }
+      .pair-side { flex: 1; padding: 16px; }
+      .pair-side + .pair-side { border-left: 1px solid #eee; }
+      .pair-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px; }
+      .pair-activity { font-size: 14px; margin-bottom: 6px; }
+      .pair-desc { font-size: 11px; color: #888; line-height: 1.5; }
+      .cat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+      .cat-card { border: 1px solid #ddd; padding: 16px; page-break-inside: avoid; }
+      .cat-name { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+      .cat-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 4px; }
+      .cat-list { list-style: none; margin-bottom: 12px; }
+      .cat-list li { font-size: 11px; padding: 2px 0; }
+      .cat-list li::before { content: '·'; margin-right: 6px; color: #aaa; }
+      .cat-divider { border-top: 1px solid #eee; padding-top: 12px; }
+    `;
+
+    const filterNote = ageFilter !== "All Ages" ? ` · Filtered: ${ageFilter}` : "";
+
+    let bodyContent = "";
+
+    if (activeView === "Timeline") {
+      bodyContent = `
+        <div class="header">
+          <small>Jayasom Family Retreat</small>
+          <h1>${schedule[activeDay].day} — ${schedule[activeDay].theme}</h1>
+          <h2>Parallel Programming Itinerary${filterNote}</h2>
+        </div>
+        <table>
+          <thead><tr><th>Time</th><th>Adults</th><th>Children</th></tr></thead>
+          <tbody>
+            ${filteredSlots.map((slot) => `
+              <tr class="${slot.shared ? "shared" : ""}">
+                <td class="time">${slot.time}</td>
+                <td>
+                  ${slot.adult.activity}
+                  <span class="category">${slot.adult.category}</span>
+                  ${slot.shared ? '<span class="shared-badge">Shared</span>' : ""}
+                </td>
+                <td>
+                  ${slot.child.activity}
+                  <span class="category">${slot.child.category}</span>
+                  ${!slot.shared ? `<span class="age">${slot.child.ageGroup}</span>` : ""}
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        <div class="footer">
+          <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
+          <div class="legend"><span>■ Highlighted rows = Shared family time</span></div>
+        </div>`;
+    } else if (activeView === "Paired Cards") {
+      bodyContent = `
+        <div class="header">
+          <small>Jayasom Family Retreat</small>
+          <h1>While You Restore, They Explore</h1>
+          <h2>Paired Adult & Children Activities${filterNote}</h2>
+        </div>
+        ${filteredPairs.map((pair) => `
+          <div class="pair-card">
+            <div class="pair-header">
+              <span>${pair.category}</span>
+              <span>${pair.time}</span>
+            </div>
+            <div class="pair-body">
+              <div class="pair-side">
+                <div class="pair-label">While you enjoy</div>
+                <div class="pair-activity">${pair.adultActivity}</div>
+                <div class="pair-desc">${pair.adultDesc}</div>
+              </div>
+              <div class="pair-side">
+                <div class="pair-label">They experience</div>
+                <div class="pair-activity">${pair.childActivity}</div>
+                <div class="pair-desc">${pair.childDesc}</div>
+                <span class="age" style="margin-top: 8px;">${pair.childAgeGroup}</span>
+              </div>
+            </div>
+          </div>
+        `).join("")}
+        <div class="footer">
+          <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
+        </div>`;
+    } else {
+      bodyContent = `
+        <div class="header">
+          <small>Jayasom Family Retreat</small>
+          <h1>Activities by Category</h1>
+          <h2>Complete Activity Guide — Adults & Children</h2>
+        </div>
+        <div class="cat-grid">
+          ${activityCategories.map((cat) => `
+            <div class="cat-card">
+              <div class="cat-name">${cat.name}</div>
+              <div class="cat-section-label">Adults</div>
+              <ul class="cat-list">
+                ${cat.adultActivities.map((a) => `<li>${a}</li>`).join("")}
+              </ul>
+              <div class="cat-divider">
+                <div class="cat-section-label">Children</div>
+                <ul class="cat-list">
+                  ${cat.childActivities.map((a) => `<li>${a}</li>`).join("")}
+                </ul>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+        <div class="footer">
+          <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
+        </div>`;
+    }
+
     printWindow.document.write(`
       <html>
         <head>
-          <title>Family Retreat Itinerary — ${schedule[activeDay].day}</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Century Gothic', 'Futura', Arial, sans-serif; color: #444; padding: 40px; line-height: 1.5; }
-            h1 { font-size: 24px; font-weight: 300; margin-bottom: 4px; }
-            h2 { font-size: 14px; font-weight: 400; color: #888; margin-bottom: 24px; }
-            .header { border-bottom: 1px solid #ddd; padding-bottom: 16px; margin-bottom: 24px; }
-            .header small { color: #999; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
-            table { width: 100%; border-collapse: collapse; }
-            th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; padding: 8px 12px; border-bottom: 2px solid #ddd; }
-            td { padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 12px; vertical-align: top; }
-            .time { color: #888; white-space: nowrap; width: 110px; }
-            .shared { background: #f9f6f3; }
-            .shared-badge { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #999; background: #eee; padding: 2px 8px; border-radius: 10px; }
-            .category { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #aaa; display: block; margin-top: 2px; }
-            .age { font-size: 9px; color: #aaa; background: #f0ece8; padding: 2px 6px; border-radius: 8px; display: inline-block; margin-top: 4px; }
-            .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 10px; color: #aaa; }
-            .legend { display: flex; gap: 24px; margin-top: 8px; }
-            .legend span { font-size: 10px; color: #888; }
-          </style>
+          <title>Jayasom Family Retreat — ${activeView}</title>
+          <style>${sharedStyles}</style>
         </head>
-        <body>
-          <div class="header">
-            <small>Jayasom Family Retreat</small>
-            <h1>${schedule[activeDay].day} — ${schedule[activeDay].theme}</h1>
-            <h2>Sample Parallel Programming Itinerary${ageFilter !== "All Ages" ? " · Filtered: " + ageFilter : ""}</h2>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>Adults</th>
-                <th>Children</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${filteredSlots.map((slot) => `
-                <tr class="${slot.shared ? "shared" : ""}">
-                  <td class="time">${slot.time}</td>
-                  <td>
-                    ${slot.adult.activity}
-                    <span class="category">${slot.adult.category}</span>
-                    ${slot.shared ? '<span class="shared-badge">Shared</span>' : ""}
-                  </td>
-                  <td>
-                    ${slot.child.activity}
-                    <span class="category">${slot.child.category}</span>
-                    ${!slot.shared ? `<span class="age">${slot.child.ageGroup}</span>` : ""}
-                  </td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>
-          <div class="footer">
-            <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
-            <div class="legend">
-              <span>■ Highlighted rows = Shared family time</span>
-            </div>
-          </div>
-        </body>
+        <body>${bodyContent}</body>
       </html>
     `);
     printWindow.document.close();
@@ -646,15 +721,13 @@ const FamilyRetreatInclusions = () => {
             </div>
 
             {/* Print button */}
-            {activeView === "Timeline" && (
-              <button
-                onClick={handlePrint}
-                className="inline-flex items-center gap-2 px-4 py-2 border border-border text-xs tracking-wide text-muted-foreground hover:text-foreground hover:border-foreground transition-all"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                Print Itinerary
-              </button>
-            )}
+            <button
+              onClick={handlePrint}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-border text-xs tracking-wide text-muted-foreground hover:text-foreground hover:border-foreground transition-all"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              Download as PDF
+            </button>
           </div>
         </div>
       </div>
