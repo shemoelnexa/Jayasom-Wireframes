@@ -24,6 +24,7 @@ import TreatmentsListing from "./pages/TreatmentsListing.tsx";
 import TreatmentDetails from "./pages/TreatmentDetails.tsx";
 import DigitalBrochure from "./pages/DigitalBrochure.tsx";
 import RetreatDetailsV2 from "./pages/RetreatDetailsV2.tsx";
+import FamilyRetreatInclusions from "./pages/FamilyRetreatInclusions.tsx";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/treatments" element={<TreatmentsListing />} />
           <Route path="/treatments/:id" element={<TreatmentDetails />} />
           <Route path="/digital-brochure" element={<DigitalBrochure />} />
+          <Route path="/family-retreat-inclusions" element={<FamilyRetreatInclusions />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -21,6 +21,7 @@ const pages = [
   { path: "/retreats-v2/holistic-detox", label: "Retreat Details V2" },
   { path: "/wellness-advisor/dr-sarah-mitchell", label: "Expert & Specialist Profile" },
   { path: "/digital-brochure", label: "Digital Brochure" },
+  { path: "/family-retreat-inclusions", label: "Family Retreat Inclusions" },
 ];
 
 const Index = () => (
