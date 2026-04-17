@@ -46,7 +46,8 @@ const WireFooter = () => (
             <li><Link to="/amaala-residences" className="hover:underline">Amaala Residences</Link></li>
             <li><Link to="/why-jayasom-residences" className="hover:underline">Why Jayasom Residences</Link></li>
             <li><Link to="/residential-community" className="hover:underline">Residential Community</Link></li>
-            <li><Link to="/masterplans-sitemaps" className="hover:underline">Masterplans</Link></li>
+            {/* REMOVED: Masterplans footer link — page removed. Uncomment to restore. */}
+            {/* <li><Link to="/masterplans-sitemaps" className="hover:underline">Masterplans</Link></li> */}
           </ul>
         </div>
       </div>

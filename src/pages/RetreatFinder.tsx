@@ -84,7 +84,8 @@ const RetreatFinder = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((retreat) => (
             <Link
-              to={retreat.type === "retreat" ? `/retreats/${retreat.id}` : "#"}
+              // REMOVED-PAGE-LINK: was `/retreats/${retreat.id}` — now points to V2. To restore original, change `/retreats-v2/` back to `/retreats/`.
+              to={retreat.type === "retreat" ? `/retreats-v2/${retreat.id}` : "#"}
               key={retreat.id}
               className="border border-border group"
             >

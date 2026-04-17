@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,21 +12,30 @@ import CulinaryNourishment from "./pages/CulinaryNourishment.tsx";
 import FamiliesWellbeing from "./pages/FamiliesWellbeing.tsx";
 import JournalsStories from "./pages/JournalsStories.tsx";
 import RetreatFinder from "./pages/RetreatFinder.tsx";
-import RetreatDetails from "./pages/RetreatDetails.tsx";
+// REMOVED: RetreatDetails — superseded by RetreatDetailsV2. To restore: uncomment this import and swap the /retreats/:id route element back to <RetreatDetails />.
+// import RetreatDetails from "./pages/RetreatDetails.tsx";
 import ActivityDetails from "./pages/ActivityDetails.tsx";
 import WellnessAdvisor from "./pages/WellnessAdvisor.tsx";
 import WellnessAdvisorProfile from "./pages/WellnessAdvisorProfile.tsx";
 import WhyJayasomResidences from "./pages/WhyJayasomResidences.tsx";
 import ResidentialCommunity from "./pages/ResidentialCommunity.tsx";
 import AmaalaResidencesOverview from "./pages/AmaalaResidencesOverview.tsx";
-import MasterplansSitemaps from "./pages/MasterplansSitemaps.tsx";
+// REMOVED: MasterplansSitemaps page — to restore: uncomment this import and the /masterplans-sitemaps route below.
+// import MasterplansSitemaps from "./pages/MasterplansSitemaps.tsx";
 import TreatmentsListing from "./pages/TreatmentsListing.tsx";
 import TreatmentDetails from "./pages/TreatmentDetails.tsx";
-import DigitalBrochure from "./pages/DigitalBrochure.tsx";
+// REMOVED: DigitalBrochure page — to restore: uncomment this import and the /digital-brochure route below.
+// import DigitalBrochure from "./pages/DigitalBrochure.tsx";
 import RetreatDetailsV2 from "./pages/RetreatDetailsV2.tsx";
 import FamilyRetreatInclusions from "./pages/FamilyRetreatInclusions.tsx";
 
 const queryClient = new QueryClient();
+
+// REMOVED-PAGE redirect: forwards legacy /retreats/:id URLs to the V2 route so old links/bookmarks keep working.
+const RetreatDetailsRedirect = () => {
+  const { id } = useParams();
+  return <Navigate to={`/retreats-v2/${id}`} replace />;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -43,7 +52,8 @@ const App = () => (
           <Route path="/families-wellbeing" element={<FamiliesWellbeing />} />
           <Route path="/journals-stories" element={<JournalsStories />} />
           <Route path="/retreat-finder" element={<RetreatFinder />} />
-          <Route path="/retreats/:id" element={<RetreatDetails />} />
+          {/* REMOVED: element was <RetreatDetails />. Redirected to V2. To restore original page, swap element back to <RetreatDetails />. */}
+          <Route path="/retreats/:id" element={<RetreatDetailsRedirect />} />
           <Route path="/retreats-v2/:id" element={<RetreatDetailsV2 />} />
           <Route path="/activity-details" element={<ActivityDetails />} />
           <Route path="/wellness-advisor" element={<WellnessAdvisor />} />
@@ -51,10 +61,12 @@ const App = () => (
           <Route path="/why-jayasom-residences" element={<WhyJayasomResidences />} />
           <Route path="/residential-community" element={<ResidentialCommunity />} />
           <Route path="/amaala-residences" element={<AmaalaResidencesOverview />} />
-          <Route path="/masterplans-sitemaps" element={<MasterplansSitemaps />} />
+          {/* REMOVED: MasterplansSitemaps route — to restore, uncomment this route and its import at the top of the file. */}
+          {/* <Route path="/masterplans-sitemaps" element={<MasterplansSitemaps />} /> */}
           <Route path="/treatments" element={<TreatmentsListing />} />
           <Route path="/treatments/:id" element={<TreatmentDetails />} />
-          <Route path="/digital-brochure" element={<DigitalBrochure />} />
+          {/* REMOVED: DigitalBrochure route — to restore, uncomment this route and its import at the top of the file. */}
+          {/* <Route path="/digital-brochure" element={<DigitalBrochure />} /> */}
           <Route path="/family-retreat-inclusions" element={<FamilyRetreatInclusions />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

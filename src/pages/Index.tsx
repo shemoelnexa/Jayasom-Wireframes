@@ -14,13 +14,13 @@ const pages = [
   { path: "/why-jayasom-residences", label: "Why Jayasom Residences" },
   { path: "/residential-community", label: "Residential Community" },
   { path: "/amaala-residences", label: "Amaala Residences Overview" },
-  { path: "/masterplans-sitemaps", label: "Masterplans & Sitemaps" },
+  // REMOVED: { path: "/masterplans-sitemaps", label: "Masterplans & Sitemaps" }, — page removed. Uncomment to restore in the index listing.
   { path: "/treatments", label: "Treatments Listing" },
   { path: "/treatments/deep-tissue-restoration", label: "Treatment Details" },
-  { path: "/retreats/restore-rebalance", label: "Retreat Details" },
+  // REMOVED: { path: "/retreats/restore-rebalance", label: "Retreat Details" }, — superseded by Retreat Details V2. Uncomment to restore in the index listing.
   { path: "/retreats-v2/holistic-detox", label: "Retreat Details V2" },
   { path: "/wellness-advisor/dr-sarah-mitchell", label: "Expert & Specialist Profile" },
-  { path: "/digital-brochure", label: "Digital Brochure" },
+  // REMOVED: { path: "/digital-brochure", label: "Digital Brochure" }, — page removed. Uncomment to restore in the index listing.
   { path: "/family-retreat-inclusions", label: "Family Retreat Inclusions" },
 ];
 
