@@ -27,6 +27,7 @@ import TreatmentDetails from "./pages/TreatmentDetails.tsx";
 // REMOVED: DigitalBrochure page — to restore: uncomment this import and the /digital-brochure route below.
 // import DigitalBrochure from "./pages/DigitalBrochure.tsx";
 import RetreatDetailsV2 from "./pages/RetreatDetailsV2.tsx";
+import RetreatDetailsAsAPair from "./pages/RetreatDetailsAsAPair.tsx";
 import FamilyRetreatInclusions from "./pages/FamilyRetreatInclusions.tsx";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,8 @@ const App = () => (
           {/* REMOVED: element was <RetreatDetails />. Redirected to V2. To restore original page, swap element back to <RetreatDetails />. */}
           <Route path="/retreats/:id" element={<RetreatDetailsRedirect />} />
           <Route path="/retreats-v2/:id" element={<RetreatDetailsV2 />} />
+          {/* Unlisted preview — not linked from any nav. Direct URL only. */}
+          <Route path="/retreats-as-a-pair" element={<RetreatDetailsAsAPair />} />
           <Route path="/activity-details" element={<ActivityDetails />} />
           <Route path="/wellness-advisor" element={<WellnessAdvisor />} />
           <Route path="/wellness-advisor/:id" element={<WellnessAdvisorProfile />} />
