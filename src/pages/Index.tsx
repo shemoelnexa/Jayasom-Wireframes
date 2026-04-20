@@ -19,6 +19,7 @@ const pages = [
   { path: "/treatments/deep-tissue-restoration", label: "Treatment Details" },
   // REMOVED: { path: "/retreats/restore-rebalance", label: "Retreat Details" }, — superseded by Retreat Details V2. Uncomment to restore in the index listing.
   { path: "/retreats-v2/holistic-detox", label: "Retreat Details V2" },
+  { path: "/retreats-as-a-pair", label: "Retreat Details — As a Pair" },
   { path: "/wellness-advisor/dr-sarah-mitchell", label: "Expert & Specialist Profile" },
   // REMOVED: { path: "/digital-brochure", label: "Digital Brochure" }, — page removed. Uncomment to restore in the index listing.
   { path: "/family-retreat-inclusions", label: "Family Retreat Inclusions" },
