@@ -1,10 +1,34 @@
+import { useState } from "react";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
-import WireButton from "@/components/wireframe/WireButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Footprints, Shirt, ShieldAlert } from "lucide-react";
 
-const ActivityDetails = () => (
+const ActivityDetails = () => {
+  const [reserveOpen, setReserveOpen] = useState(false);
+  const [reserveName, setReserveName] = useState("");
+  const [reservePhone, setReservePhone] = useState("");
+  const [reserveEmail, setReserveEmail] = useState("");
+  const [reserveMessage, setReserveMessage] = useState("");
+
+  const handleReserveSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setReserveOpen(false);
+    setReserveName("");
+    setReservePhone("");
+    setReserveEmail("");
+    setReserveMessage("");
+  };
+
+  return (
   <WireLayout>
     <div className="px-8 py-4 text-xs text-muted-foreground">
       Activities → Desert Sunrise Meditation
@@ -66,7 +90,69 @@ const ActivityDetails = () => (
             </div>
           </div>
 
-          <WireButton>Reserve your spot</WireButton>
+          <Dialog open={reserveOpen} onOpenChange={setReserveOpen}>
+            <DialogTrigger asChild>
+              <button className="border px-6 py-3 text-xs tracking-wider border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors self-start">
+                Reserve your spot
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-light">Reserve Your Spot</DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  Desert Sunrise Meditation · 60 minutes · Max 8 guests
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleReserveSubmit} className="space-y-4 mt-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={reserveName}
+                    onChange={(e) => setReserveName(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    value={reservePhone}
+                    onChange={(e) => setReservePhone(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={reserveEmail}
+                    onChange={(e) => setReserveEmail(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Message</label>
+                  <textarea
+                    rows={3}
+                    value={reserveMessage}
+                    onChange={(e) => setReserveMessage(e.target.value)}
+                    placeholder="Any notes or requests for our team…"
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none resize-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+                >
+                  Confirm Reservation
+                </button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </section>
@@ -114,6 +200,7 @@ const ActivityDetails = () => (
       </div>
     </WireSection>
   </WireLayout>
-);
+  );
+};
 
 export default ActivityDetails;

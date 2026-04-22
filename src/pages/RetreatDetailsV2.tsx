@@ -14,12 +14,6 @@ const programGoals = [
   { icon: "🌿", title: "Sustainable Lifestyle Development", desc: "Take-home strategies and habits ensuring your transformation continues long after departure." },
 ];
 
-const durationOptions = [
-  { nights: "7 Nights", label: "Essential", price: "From $5,950", popular: false },
-  { nights: "10 Nights", label: "Recommended", price: "From $7,800", popular: true },
-  { nights: "14 Nights", label: "Comprehensive", price: "From $9,600", popular: false },
-];
-
 const journeyDays = [
   { day: "Day 1", title: "Arrival & Assessment", desc: "Welcome consultation, comprehensive health screening, blood work, body composition analysis, and personalised programme design." },
   { day: "Day 2–3", title: "Diagnostic & Foundation", desc: "Advanced diagnostics (ECG, spirometry, BIA), initial treatments begin, nutrition plan starts, movement assessment." },
@@ -70,8 +64,6 @@ const testimonials = [
   { quote: "What sets this apart is the integration — medical, nutritional, movement, and mindfulness all working together. My energy levels transformed within the first week.", author: "James R.", programme: "10-Night Programme", result: "Improved sleep quality by 3 hours nightly" },
 ];
 
-const bookingSteps = ["Programme", "Dates", "Accommodation", "Extras", "Contact"];
-
 /* ── Component ── */
 
 const RetreatDetailsV2 = () => {
@@ -101,47 +93,24 @@ const RetreatDetailsV2 = () => {
         </div>
       </div>
 
-      {/* ── Programme Introduction + Key Facts Sidebar ── */}
+      {/* ── Programme Introduction ── */}
       <section className="px-8 py-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2">
-            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Programme Overview</p>
-            <h2 className="text-2xl font-light text-foreground mb-6">An Evidence-Based Approach to Transformation</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6">{retreat.longDesc}</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Working alongside our medical team and a Michelin-level culinary wellness kitchen, every element of this programme is designed to deliver a complete reset and measurable transformation. Your journey is guided by advanced diagnostics, personalised protocols, and a multidisciplinary team dedicated to your lasting wellbeing.
-            </p>
-          </div>
-
-          {/* Key Facts Card */}
-          <div className="border border-border p-6 h-fit">
-            <h3 className="text-sm font-bold mb-5 text-foreground">Key Facts</h3>
-            <div className="space-y-4 text-xs">
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Duration</span>
-                <span className="text-foreground font-medium">7, 10, or 14 Nights</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Programme Type</span>
-                <span className="text-foreground font-medium">Medically Supervised</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Starting From</span>
-                <span className="text-foreground font-medium">$5,950</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Intensity Level</span>
-                <span className="text-foreground font-medium">Moderate to High</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Best For</span>
-                <span className="text-foreground font-medium">Deep Cleansing</span>
-              </div>
-            </div>
-            <div className="mt-6">
-              <WireButton className="w-full text-center">Request a Quote</WireButton>
-            </div>
-          </div>
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Programme Overview</p>
+          <h2 className="text-2xl font-light text-foreground mb-6">An Evidence-Based Approach to Transformation</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">{retreat.longDesc}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            Working alongside our medical team and a Michelin-level culinary wellness kitchen, every element of this programme is designed to deliver a complete reset and measurable transformation. Your journey is guided by advanced diagnostics, personalised protocols, and a multidisciplinary team dedicated to your lasting wellbeing.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            This is not a generic wellness stay. From your first consultation, your programme is shaped around your history, your goals, and the results of comprehensive diagnostic work. Medical, nutritional, movement, and mindfulness disciplines operate as a single team, meeting each week to review your progress and refine your plan — so every treatment, meal, and session builds on the last.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            We believe lasting change is the product of depth, not length. While our retreats range from focused resets to extended immersions, every programme is built to produce measurable improvements in core biomarkers and equip you with the knowledge, rituals, and support to carry the work home. The environment itself — quiet, unhurried, and held by a team that knows your name — is part of the treatment.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Whether you are arriving at a turning point, recovering from a demanding period, or simply committed to ageing well, this programme offers a considered, clinically grounded, and deeply human approach to wellbeing.
+          </p>
         </div>
       </section>
 
@@ -156,34 +125,6 @@ const RetreatDetailsV2 = () => {
                 <div className="text-2xl mb-4">{goal.icon}</div>
                 <h3 className="text-sm font-bold text-foreground mb-2">{goal.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{goal.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Duration & Pricing Cards ── */}
-      <section className="px-8 py-16">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-xs tracking-widest uppercase text-muted-foreground mb-3">Duration Options</p>
-          <h2 className="text-2xl font-light text-foreground mb-3">Choose Your Programme Length</h2>
-          <p className="text-sm text-muted-foreground mb-10 max-w-2xl">Each duration option includes the full programme — longer stays include additional treatments, deeper diagnostics, and extended recovery phases.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {durationOptions.map((opt) => (
-              <div key={opt.nights} className={`border p-6 relative ${opt.popular ? "border-foreground" : "border-border"}`}>
-                {opt.popular && (
-                  <div className="absolute top-0 left-0 right-0 bg-foreground text-background text-xs text-center py-1 tracking-wider">
-                    RECOMMENDED
-                  </div>
-                )}
-                <div className={opt.popular ? "mt-4" : ""}>
-                  <h3 className="text-lg font-light text-foreground mb-1">{opt.nights}</h3>
-                  <p className="text-xs text-muted-foreground mb-4">{opt.label} Programme</p>
-                  <p className="text-sm font-bold text-foreground mb-6">{opt.price}</p>
-                  <p className="text-xs text-muted-foreground mb-1">Programme only — accommodation separate</p>
-                  <p className="text-xs text-muted-foreground mb-6">Extension week available on request</p>
-                  <WireButton className="w-full text-center">Select {opt.nights}</WireButton>
-                </div>
               </div>
             ))}
           </div>
@@ -384,64 +325,6 @@ const RetreatDetailsV2 = () => {
           ))}
         </div>
       </WireSection>
-
-      {/* ── Booking Widget (Multi-Step) ── */}
-      <section className="px-8 py-16 bg-foreground text-primary-foreground">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-3">Begin Your Journey</p>
-          <h2 className="text-2xl font-light text-primary-foreground mb-8">Reserve Your Programme</h2>
-
-          {/* Step Indicators */}
-          <div className="flex items-center gap-2 mb-10">
-            {bookingSteps.map((step, i) => (
-              <div key={step} className="flex items-center gap-2">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${i === 0 ? "bg-primary-foreground text-foreground" : "border border-primary-foreground/40 text-primary-foreground/40"}`}>
-                  {i + 1}
-                </div>
-                <span className={`text-xs ${i === 0 ? "text-primary-foreground" : "text-primary-foreground/40"}`}>{step}</span>
-                {i < bookingSteps.length - 1 && <div className="w-6 h-px bg-primary-foreground/20" />}
-              </div>
-            ))}
-          </div>
-
-          {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Programme Duration</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">Select duration</div>
-            </div>
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Preferred Arrival Date</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">Select date</div>
-            </div>
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Number of Guests</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">1 Adult</div>
-            </div>
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Accommodation Preference</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">Select room type</div>
-            </div>
-          </div>
-
-          {/* Accommodation Preview */}
-          <p className="text-xs text-primary-foreground/60 mb-4">Featured Accommodation Options</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {["Wellness Suite", "Garden Villa", "Ocean Residence", "Royal Suite"].map((room) => (
-              <div key={room} className="border border-primary-foreground/20">
-                <WireImage className="h-28" label={room} />
-                <p className="text-xs text-primary-foreground/70 p-3">{room}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <WireButton dark className="flex-1 text-center">Request a Quote</WireButton>
-            <WireButton dark className="flex-1 text-center">Contact via WhatsApp</WireButton>
-          </div>
-          <p className="text-xs text-primary-foreground/40 mt-4 text-center">Our Health Concierge will respond within 24 hours with a personalised proposal.</p>
-        </div>
-      </section>
 
       {/* ── Health Concierge / Post-Stay Support ── */}
       <section className="px-8 py-16">

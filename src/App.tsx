@@ -11,6 +11,7 @@ import RoomsDetails from "./pages/RoomsDetails.tsx";
 import CulinaryNourishment from "./pages/CulinaryNourishment.tsx";
 import FamiliesWellbeing from "./pages/FamiliesWellbeing.tsx";
 import JournalsStories from "./pages/JournalsStories.tsx";
+import JournalDetail from "./pages/JournalDetail.tsx";
 import RetreatFinder from "./pages/RetreatFinder.tsx";
 // REMOVED: RetreatDetails — superseded by RetreatDetailsV2. To restore: uncomment this import and swap the /retreats/:id route element back to <RetreatDetails />.
 // import RetreatDetails from "./pages/RetreatDetails.tsx";
@@ -20,6 +21,7 @@ import WellnessAdvisorProfile from "./pages/WellnessAdvisorProfile.tsx";
 import WhyJayasomResidences from "./pages/WhyJayasomResidences.tsx";
 import ResidentialCommunity from "./pages/ResidentialCommunity.tsx";
 import AmaalaResidencesOverview from "./pages/AmaalaResidencesOverview.tsx";
+import ResidenceDetails from "./pages/ResidenceDetails.tsx";
 // REMOVED: MasterplansSitemaps page — to restore: uncomment this import and the /masterplans-sitemaps route below.
 // import MasterplansSitemaps from "./pages/MasterplansSitemaps.tsx";
 import TreatmentsListing from "./pages/TreatmentsListing.tsx";
@@ -52,6 +54,7 @@ const App = () => (
           <Route path="/culinary-nourishment" element={<CulinaryNourishment />} />
           <Route path="/families-wellbeing" element={<FamiliesWellbeing />} />
           <Route path="/journals-stories" element={<JournalsStories />} />
+          <Route path="/journals-stories/:id" element={<JournalDetail />} />
           <Route path="/retreat-finder" element={<RetreatFinder />} />
           {/* REMOVED: element was <RetreatDetails />. Redirected to V2. To restore original page, swap element back to <RetreatDetails />. */}
           <Route path="/retreats/:id" element={<RetreatDetailsRedirect />} />
@@ -64,6 +67,7 @@ const App = () => (
           <Route path="/why-jayasom-residences" element={<WhyJayasomResidences />} />
           <Route path="/residential-community" element={<ResidentialCommunity />} />
           <Route path="/amaala-residences" element={<AmaalaResidencesOverview />} />
+          <Route path="/amaala-residences/:id" element={<ResidenceDetails />} />
           {/* REMOVED: MasterplansSitemaps route — to restore, uncomment this route and its import at the top of the file. */}
           {/* <Route path="/masterplans-sitemaps" element={<MasterplansSitemaps />} /> */}
           <Route path="/treatments" element={<TreatmentsListing />} />

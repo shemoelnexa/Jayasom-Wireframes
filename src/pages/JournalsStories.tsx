@@ -1,22 +1,9 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { Link } from "react-router-dom";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import { Star, Share2 } from "lucide-react";
-
-const allArticles = [
-  { title: "The Science of Sleep at Jayasom", category: "Wellness", date: "March 2026", desc: "How circadian design and personalised sleep protocols help our guests rediscover deep, restorative rest." },
-  { title: "Farm-to-Table: Our Garden Story", category: "Home", date: "February 2026", desc: "A look inside Jayasom's organic gardens and how they shape every meal on your wellness journey." },
-  { title: "A Conversation with Our Founder", category: "Health", date: "January 2026", desc: "Karen Campbell shares the vision behind Jayasom and what it means to create a heart-centred wellness destination." },
-  { title: "Movement as Medicine", category: "Wellness", date: "January 2026", desc: "Exploring the role of intentional movement — from yoga to aquatic therapy — in holistic healing." },
-  { title: "Building Community at Amaala", category: "Destination", date: "December 2025", desc: "How Jayasom is fostering a connected, wellness-led community along the Red Sea coast." },
-  { title: "The Art of Doing Nothing", category: "Wellness", date: "November 2025", desc: "Why stillness is the most radical act of self-care, and how Jayasom creates space for it." },
-  { title: "Desert Healing Traditions", category: "Destination", date: "October 2025", desc: "Ancient Arabian wellness practices that inspire the therapeutic programmes at Jayasom." },
-  { title: "Nutrition for Longevity", category: "Health", date: "September 2025", desc: "Evidence-based dietary strategies our nutritionists use to support long-term vitality." },
-  { title: "Designing Spaces That Heal", category: "Home", date: "August 2025", desc: "How biophilic architecture and circadian lighting transform residences into healing environments." },
-  { title: "Mindfulness in Modern Life", category: "Wellness", date: "July 2025", desc: "Practical mindfulness techniques you can integrate into your daily routine beyond the retreat." },
-  { title: "The Red Sea Ecosystem", category: "Destination", date: "June 2025", desc: "Exploring the marine biodiversity that makes Amaala one of the world's most pristine coastal destinations." },
-  { title: "Hormonal Health at Every Age", category: "Health", date: "May 2025", desc: "Understanding hormonal shifts and how integrative approaches support women through every life stage." },
-];
+import { articles } from "@/data/articles";
 
 const filterCategories = ["Most Recent", "Wellness", "Home", "Destination", "Health"];
 
@@ -26,7 +13,7 @@ const JournalsStories = () => {
   const loaderRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
-    const base = activeFilter === "Most Recent" ? allArticles : allArticles.filter((a) => a.category === activeFilter);
+    const base = activeFilter === "Most Recent" ? articles : articles.filter((a) => a.category === activeFilter);
     return base;
   }, [activeFilter]);
 
@@ -82,7 +69,7 @@ const JournalsStories = () => {
       <section className="px-8 pb-16">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {visible.map((article) => (
-            <div key={article.title} className="border border-border flex flex-col">
+            <Link to={`/journals-stories/${article.id}`} key={article.id} className="border border-border flex flex-col group">
               <div className="aspect-[4/3] relative">
                 <WireImage className="h-full w-full" label="Article Image" />
               </div>
@@ -92,21 +79,31 @@ const JournalsStories = () => {
                   <span className="text-xs text-muted-foreground">·</span>
                   <span className="text-xs text-muted-foreground">{article.date}</span>
                 </div>
-                <h3 className="text-sm font-bold mb-2 text-foreground">{article.title}</h3>
+                <h3 className="text-sm font-bold mb-2 text-foreground group-hover:underline">{article.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1">{article.desc}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-foreground border-b border-foreground pb-0.5 cursor-pointer">Read more →</span>
+                  <span className="text-xs text-foreground border-b border-foreground pb-0.5">Read more →</span>
                   <div className="flex items-center gap-3">
-                    <button className="text-muted-foreground hover:text-foreground transition-colors" title="Save">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="Save"
+                    >
                       <Star className="w-4 h-4" />
                     </button>
-                    <button className="text-muted-foreground hover:text-foreground transition-colors" title="Share">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="Share"
+                    >
                       <Share2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

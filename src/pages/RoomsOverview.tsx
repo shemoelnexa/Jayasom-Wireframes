@@ -3,7 +3,14 @@ import { Link } from "react-router-dom";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
-import WireButton from "@/components/wireframe/WireButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { rooms } from "@/data/rooms";
 import { Users, BedDouble, Baby } from "lucide-react";
 
@@ -25,6 +32,20 @@ const RoomsOverview = () => {
   const [filterRooms, setFilterRooms] = useState(0);
   const [filterGuests, setFilterGuests] = useState(0);
   const [filterChildren, setFilterChildren] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [contactName, setContactName] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactOpen(false);
+    setContactName("");
+    setContactPhone("");
+    setContactEmail("");
+    setContactMessage("");
+  };
 
   const filtered = rooms.filter((room) => {
     if (filterRooms > 0) {
@@ -171,7 +192,69 @@ const RoomsOverview = () => {
       </section>
 
       <WireSection dark title="Need Help Choosing?" subtitle="Our concierge team can recommend the perfect room or villa based on your retreat preferences and wellness goals.">
-        <WireButton dark>Talk to our team</WireButton>
+        <Dialog open={contactOpen} onOpenChange={setContactOpen}>
+          <DialogTrigger asChild>
+            <button className="border px-6 py-3 text-xs tracking-wider border-primary-foreground text-primary-foreground">
+              Talk to our team
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-light">Talk to Our Team</DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Share your details and how we can help. A concierge will follow up shortly.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleContactSubmit} className="space-y-4 mt-2">
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+                <input
+                  type="text"
+                  required
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone</label>
+                <input
+                  type="tel"
+                  required
+                  value={contactPhone}
+                  onChange={(e) => setContactPhone(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Message</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none resize-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+              >
+                Submit Message
+              </button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </WireSection>
     </WireLayout>
   );

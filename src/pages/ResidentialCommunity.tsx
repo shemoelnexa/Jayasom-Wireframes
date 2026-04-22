@@ -1,7 +1,15 @@
+import { useState } from "react";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
-import WireButton from "@/components/wireframe/WireButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const socialSpaces = [
   { name: "The Gathering Pavilion", desc: "A central open-air meeting point for community events, seasonal celebrations, and evening gatherings under the stars." },
@@ -21,7 +29,23 @@ const sharedAmenities = [
   "Bicycle & E-Scooter Hub",
 ];
 
-const ResidentialCommunity = () => (
+const ResidentialCommunity = () => {
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const [registerName, setRegisterName] = useState("");
+  const [registerPhone, setRegisterPhone] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerMessage, setRegisterMessage] = useState("");
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterOpen(false);
+    setRegisterName("");
+    setRegisterPhone("");
+    setRegisterEmail("");
+    setRegisterMessage("");
+  };
+
+  return (
   <WireLayout>
     <div className="relative">
       <WireImage className="h-[480px] w-full" label="Hero Image — Residential Community" />
@@ -77,9 +101,72 @@ const ResidentialCommunity = () => (
     </WireSection>
 
     <WireSection dark title="Join Our Community" subtitle="Register your interest and be among the first to experience wellness-led community living at Amaala.">
-      <WireButton dark>Register interest</WireButton>
+      <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
+        <DialogTrigger asChild>
+          <button className="border px-6 py-3 text-xs tracking-wider border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-foreground transition-colors">
+            Register interest
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-light">Register Your Interest</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Share your details and our community team will be in touch with information on availability, events, and next steps.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleRegisterSubmit} className="space-y-4 mt-2">
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+              <input
+                type="text"
+                required
+                value={registerName}
+                onChange={(e) => setRegisterName(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone Number</label>
+              <input
+                type="tel"
+                required
+                value={registerPhone}
+                onChange={(e) => setRegisterPhone(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email</label>
+              <input
+                type="email"
+                required
+                value={registerEmail}
+                onChange={(e) => setRegisterEmail(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Message</label>
+              <textarea
+                rows={3}
+                value={registerMessage}
+                onChange={(e) => setRegisterMessage(e.target.value)}
+                placeholder="Tell us what you'd like to know…"
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none resize-none"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+            >
+              Submit Registration
+            </button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </WireSection>
   </WireLayout>
-);
+  );
+};
 
 export default ResidentialCommunity;

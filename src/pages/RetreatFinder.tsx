@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { format } from "date-fns";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
-import WireButton from "@/components/wireframe/WireButton";
 import { retreats } from "@/data/retreats";
-import { Calendar } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { Calendar, CalendarIcon } from "lucide-react";
 
 const properties = [
   { key: "all", label: "All Properties" },
@@ -22,9 +32,28 @@ const filters = [
 ];
 
 const RetreatFinder = () => {
-  const [showScheduler, setShowScheduler] = useState(false);
   const [activeProperty, setActiveProperty] = useState("all");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [leadOpen, setLeadOpen] = useState(false);
+  const [leadName, setLeadName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadPhone, setLeadPhone] = useState("");
+  const [leadProperty, setLeadProperty] = useState("");
+  const [leadInterest, setLeadInterest] = useState("");
+  const [leadDate, setLeadDate] = useState<Date | undefined>(undefined);
+  const [leadMessage, setLeadMessage] = useState("");
+
+  const handleLeadSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLeadOpen(false);
+    setLeadName("");
+    setLeadEmail("");
+    setLeadPhone("");
+    setLeadProperty("");
+    setLeadInterest("");
+    setLeadDate(undefined);
+    setLeadMessage("");
+  };
 
   const filtered = retreats.filter((r) => {
     if (activeProperty !== "all" && r.property !== activeProperty) return false;
@@ -131,34 +160,127 @@ const RetreatFinder = () => {
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-2xl font-light mb-3 text-foreground">Not Sure Where to Start?</h2>
           <p className="text-sm text-muted-foreground mb-8 max-w-lg mx-auto">Our Wellness Advisors are here to listen. Share your story and we'll recommend the perfect retreat for you.</p>
-          <button
-            onClick={() => setShowScheduler(!showScheduler)}
-            className="border-2 border-foreground px-8 py-4 text-sm tracking-wider text-foreground inline-flex items-center gap-3 hover:bg-foreground hover:text-background transition-colors"
-          >
-            <Calendar className="w-4 h-4" />
-            Speak to a Wellness Advisor
-          </button>
-
-          {showScheduler && (
-            <div className="border border-border mt-8 max-w-md mx-auto p-6">
-              <p className="text-xs font-bold text-foreground mb-4">Select a 15-Minute Consultation Slot</p>
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                {["Mon 28", "Tue 29", "Wed 30"].map((day) => (
-                  <div key={day} className="border border-border p-2 text-center">
-                    <p className="text-xs text-foreground font-bold">{day}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {["09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45"].map((time) => (
-                  <div key={time} className="border border-border px-2 py-2 text-xs text-muted-foreground text-center cursor-pointer hover:bg-foreground hover:text-background transition-colors">{time}</div>
-                ))}
-              </div>
-              <div className="mt-4">
-                <WireButton>Confirm Booking</WireButton>
-              </div>
-            </div>
-          )}
+          <Dialog open={leadOpen} onOpenChange={setLeadOpen}>
+            <DialogTrigger asChild>
+              <button className="border-2 border-foreground px-8 py-4 text-sm tracking-wider text-foreground inline-flex items-center gap-3 hover:bg-foreground hover:text-background transition-colors">
+                <Calendar className="w-4 h-4" />
+                Speak to a Wellness Advisor
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-light">Speak to a Wellness Advisor</DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  Share your details and a Wellness Advisor will be in touch to help you find the right retreat.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleLeadSubmit} className="space-y-4 mt-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={leadName}
+                    onChange={(e) => setLeadName(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={leadEmail}
+                    onChange={(e) => setLeadEmail(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    value={leadPhone}
+                    onChange={(e) => setLeadPhone(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Preferred Property</label>
+                  <select
+                    required
+                    value={leadProperty}
+                    onChange={(e) => setLeadProperty(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  >
+                    <option value="" disabled>Select a property</option>
+                    <option value="amaala">Amaala</option>
+                    <option value="ibiza">Ibiza</option>
+                    <option value="bali">Bali</option>
+                    <option value="unsure">Not sure yet</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Wellness Interest</label>
+                  <select
+                    required
+                    value={leadInterest}
+                    onChange={(e) => setLeadInterest(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  >
+                    <option value="" disabled>Select an interest</option>
+                    <option value="detox">Detox</option>
+                    <option value="longevity">Longevity</option>
+                    <option value="sleep">Sleep</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="mental-fitness">Mental Fitness</option>
+                    <option value="unsure">Not sure yet</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Preferred Dates</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground flex items-center justify-between focus:outline-none"
+                      >
+                        <span className={leadDate ? "text-foreground" : "text-muted-foreground"}>
+                          {leadDate ? format(leadDate, "PPP") : "Pick a date"}
+                        </span>
+                        <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarPicker
+                        mode="single"
+                        selected={leadDate}
+                        onSelect={setLeadDate}
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Message</label>
+                  <textarea
+                    rows={3}
+                    value={leadMessage}
+                    onChange={(e) => setLeadMessage(e.target.value)}
+                    placeholder="Share a bit about what you're looking for…"
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none resize-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+                >
+                  Request a Call
+                </button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
     </WireLayout>

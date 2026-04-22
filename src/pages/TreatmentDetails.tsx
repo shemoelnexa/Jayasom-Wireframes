@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
-import WireButton from "@/components/wireframe/WireButton";
 import { treatments } from "@/data/treatments";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -51,27 +50,28 @@ const TreatmentDetails = () => {
             </ul>
 
             <h3 className="text-sm font-bold mb-3 text-foreground">Preparation & Notes</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">{treatment.preparation}</p>
+            <p className="text-xs text-muted-foreground leading-relaxed mb-8">{treatment.preparation}</p>
+
+            <h3 className="text-sm font-bold mb-3 text-foreground">The Experience</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+              Every treatment begins with a personal wellness consultation, followed by a calming ritual of aromatherapy and breathwork to guide you into a state of rest. Our therapists work in quiet, unhurried rhythm — tailoring pressure, temperature, and pace to your body's response throughout the session, so the benefits settle deeply rather than pass quickly.
+            </p>
+
+            <h3 className="text-sm font-bold mb-3 text-foreground">The Environment</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+              Private treatment suites are built for sensory stillness — acoustically sealed, naturally lit through filtered skylights, and finished with sustainably sourced stone and timber. Air and water are continuously purified, and ambient scent, sound, and temperature adjust to your preference throughout the session.
+            </p>
+
+            <h3 className="text-sm font-bold mb-3 text-foreground">After Your Session</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We recommend allowing an hour of quiet time after your session. A herbal infusion and light nourishment are offered in the post-treatment lounge to help the body integrate, and where appropriate your therapist will share at-home rituals — breathwork, oils, or simple movement — to continue the benefits of the treatment in the days ahead.
+            </p>
           </div>
 
-          <div className="border border-border p-6">
-            <h3 className="text-sm font-bold mb-4 text-foreground">Book This Treatment</h3>
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Preferred Date</label>
-                <div className="border border-border px-3 py-2 text-xs text-muted-foreground">Select date</div>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Preferred Time</label>
-                <div className="border border-border px-3 py-2 text-xs text-muted-foreground">Select time</div>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Therapist Preference</label>
-                <div className="border border-border px-3 py-2 text-xs text-muted-foreground">No preference</div>
-              </div>
-            </div>
-            <WireButton>Book treatment</WireButton>
-            <p className="text-xs text-muted-foreground mt-4">Duration: {treatment.duration} · Pricing on request</p>
+          <div className="flex flex-col gap-4">
+            <WireImage className="h-[220px] w-full" label={`${treatment.name} — Treatment Room`} />
+            <WireImage className="h-[220px] w-full" label={`${treatment.name} — Therapist Setup`} />
+            <WireImage className="h-[220px] w-full" label={`${treatment.name} — Wellness Space`} />
           </div>
         </div>
       </section>

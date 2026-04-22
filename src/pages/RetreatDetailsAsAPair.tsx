@@ -86,8 +86,6 @@ const alsoConsider = [
   },
 ];
 
-const bookingSteps = ["Programme", "Dates", "Accommodation", "Extras", "Contact"];
-
 /* ── Component ── */
 
 const RetreatDetailsAsAPair = () => {
@@ -114,49 +112,26 @@ const RetreatDetailsAsAPair = () => {
         </div>
       </div>
 
-      {/* ── Overview + Key Facts Sidebar ── */}
+      {/* ── Overview ── */}
       <section className="px-8 py-16">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2">
-            <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Overview</p>
-            <h2 className="text-2xl font-light text-foreground mb-6">Strengthen Your Bond</h2>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              As a Pair is intended for two people or a couple, deeply invested in their togetherness. The retreat encourages individual growth to strengthen the bond, improve communication, align goals, and explore healthier relationship dynamics in a supportive environment free from daily pressures.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Workshops deepen trust and intimacy and improve understanding, sustaining connection beyond the retreat.
-            </p>
-          </div>
-
-          {/* Key Facts Card */}
-          <div className="border border-border p-6 h-fit">
-            <h3 className="text-sm font-bold mb-5 text-foreground">Key Facts</h3>
-            <div className="space-y-4 text-xs">
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Duration</span>
-                <span className="text-foreground font-medium">4, 7, 10, or 14 Nights</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Programme Type</span>
-                <span className="text-foreground font-medium">Couples Retreat</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Designed For</span>
-                <span className="text-foreground font-medium">Two People / Couples</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-3">
-                <span className="text-muted-foreground">Focus</span>
-                <span className="text-foreground font-medium">Connection &amp; Renewal</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Best For</span>
-                <span className="text-foreground font-medium">Reconnection</span>
-              </div>
-            </div>
-            <div className="mt-6">
-              <WireButton className="w-full text-center">Request a Quote</WireButton>
-            </div>
-          </div>
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs tracking-widest uppercase text-muted-foreground mb-4">Overview</p>
+          <h2 className="text-2xl font-light text-foreground mb-6">Strengthen Your Bond</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            As a Pair is intended for two people or a couple, deeply invested in their togetherness. The retreat encourages individual growth to strengthen the bond, improve communication, align goals, and explore healthier relationship dynamics in a supportive environment free from daily pressures.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            Workshops deepen trust and intimacy and improve understanding, sustaining connection beyond the retreat.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            The programme is built on a simple conviction: relationships, like bodies, benefit from focused, unhurried attention. Over your stay, a Wellness Advisor will come to know you as a pair — your rhythms, your patterns, the spaces where you meet and the ones where you pass each other by — and will adjust each day's shape in response. Some mornings you will sit together; other mornings you will practice apart and return to each other with something new to bring.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            Alongside the couples-focused work, each of you receives the full depth of the Jayasom offering as individuals. Your bodies are cared for with the same rigour as any other retreat — diagnostics, bodywork, movement, culinary nourishment, and rest — so that what you give to one another comes from a replenished place. Every element is evidence-based, practitioner-led, and tailored to who you are today.
+          </p>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            The result is a retreat that is neither a romantic escape nor a therapeutic intervention, but a considered period of reconnection — honest, restorative, and designed to send you home with rituals and language you can continue to use in daily life.
+          </p>
         </div>
       </section>
 
@@ -299,64 +274,6 @@ const RetreatDetailsAsAPair = () => {
               Every As a Pair programme is tailored following your initial consultation with your Wellness Advisor. The sessions and schedules shown represent the core programme — your team may recommend additional or alternative experiences based on what surfaces during your time together.
             </p>
           </div>
-        </div>
-      </section>
-
-      {/* ── Booking Widget (Multi-Step) ── */}
-      <section className="px-8 py-16 bg-foreground text-primary-foreground">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs tracking-widest uppercase text-primary-foreground/60 mb-3">Begin Your Journey</p>
-          <h2 className="text-2xl font-light text-primary-foreground mb-8">Reserve Your Programme</h2>
-
-          {/* Step Indicators */}
-          <div className="flex items-center gap-2 mb-10">
-            {bookingSteps.map((step, i) => (
-              <div key={step} className="flex items-center gap-2">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs ${i === 0 ? "bg-primary-foreground text-foreground" : "border border-primary-foreground/40 text-primary-foreground/40"}`}>
-                  {i + 1}
-                </div>
-                <span className={`text-xs ${i === 0 ? "text-primary-foreground" : "text-primary-foreground/40"}`}>{step}</span>
-                {i < bookingSteps.length - 1 && <div className="w-6 h-px bg-primary-foreground/20" />}
-              </div>
-            ))}
-          </div>
-
-          {/* Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Programme Duration</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">Select duration (4 / 7 / 10 / 14 nights)</div>
-            </div>
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Preferred Arrival Date</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">Select date</div>
-            </div>
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Number of Guests</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">2 Adults</div>
-            </div>
-            <div>
-              <label className="text-xs text-primary-foreground/60 block mb-2">Accommodation Preference</label>
-              <div className="border border-primary-foreground/30 px-4 py-3 text-xs text-primary-foreground/60">Select room type</div>
-            </div>
-          </div>
-
-          {/* Accommodation Preview */}
-          <p className="text-xs text-primary-foreground/60 mb-4">Featured Accommodation Options</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {["Wellness Suite", "Garden Villa", "Ocean Residence", "Royal Suite"].map((room) => (
-              <div key={room} className="border border-primary-foreground/20">
-                <WireImage className="h-28" label={room} />
-                <p className="text-xs text-primary-foreground/70 p-3">{room}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <WireButton dark className="flex-1 text-center">Request a Quote</WireButton>
-            <WireButton dark className="flex-1 text-center">Contact via WhatsApp</WireButton>
-          </div>
-          <p className="text-xs text-primary-foreground/40 mt-4 text-center">Our Wellness Advisor will respond within 24 hours with a personalised proposal.</p>
         </div>
       </section>
 

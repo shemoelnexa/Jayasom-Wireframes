@@ -1,9 +1,21 @@
 import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
 import WireButton from "@/components/wireframe/WireButton";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react";
 
 const spaces = [
   { name: "Hydrotherapy Circuit", desc: "A sequential water-based therapy journey including vitality pools, cold plunge, steam rooms, and sensory showers." },
@@ -22,9 +34,16 @@ const spaces = [
 
 const INITIAL_COUNT = 6;
 
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
 const WellbeingSpaces = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [visibleCount, setVisibleCount] = useState(INITIAL_COUNT);
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourDate, setTourDate] = useState<Date | undefined>(undefined);
+  const [tourName, setTourName] = useState("");
+  const [tourEmail, setTourEmail] = useState("");
+  const [tourPhone, setTourPhone] = useState("");
 
   const scroll = (dir: "left" | "right") => {
     carouselRef.current?.scrollBy({ left: dir === "left" ? -340 : 340, behavior: "smooth" });
@@ -32,6 +51,15 @@ const WellbeingSpaces = () => {
 
   const visibleSpaces = spaces.slice(0, visibleCount);
   const hasMore = visibleCount < spaces.length;
+
+  const handleTourSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setTourOpen(false);
+    setTourName("");
+    setTourEmail("");
+    setTourPhone("");
+    setTourDate(undefined);
+  };
 
   return (
     <WireLayout>
@@ -57,7 +85,9 @@ const WellbeingSpaces = () => {
           <div className="flex flex-col justify-center">
             <h3 className="text-lg font-light mb-3 text-foreground">The Wellness Centre</h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">A 4,000 sqm sanctuary housing treatment rooms, hydrotherapy circuits, movement studios, and consultation suites. Designed with natural materials that breathe with the landscape.</p>
-            <WireButton>Explore treatments</WireButton>
+            <Link to="/treatments" className="self-start">
+              <WireButton>Explore treatments</WireButton>
+            </Link>
           </div>
         </div>
       </WireSection>
@@ -73,13 +103,17 @@ const WellbeingSpaces = () => {
           </button>
           <div ref={carouselRef} className="flex gap-6 overflow-x-auto px-8 pb-4" style={{ scrollbarWidth: "none" }}>
             {spaces.map((space) => (
-              <div key={space.name} className="border border-border min-w-[300px] flex-shrink-0">
+              <Link
+                to={`/treatments/${slugify(space.name)}`}
+                key={space.name}
+                className="border border-border min-w-[300px] flex-shrink-0 group"
+              >
                 <WireImage className="h-48" label={space.name} />
                 <div className="p-5">
-                  <h4 className="text-sm font-bold mb-2 text-foreground">{space.name}</h4>
+                  <h4 className="text-sm font-bold mb-2 text-foreground group-hover:underline">{space.name}</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">{space.desc}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -89,13 +123,17 @@ const WellbeingSpaces = () => {
       <WireSection title="All Spaces & Amenities">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {visibleSpaces.map((space) => (
-            <div key={space.name} className="border border-border">
+            <Link
+              to={`/treatments/${slugify(space.name)}`}
+              key={space.name}
+              className="border border-border group"
+            >
               <WireImage className="h-48" label={space.name} />
               <div className="p-5">
-                <h4 className="text-sm font-bold mb-2 text-foreground">{space.name}</h4>
+                <h4 className="text-sm font-bold mb-2 text-foreground group-hover:underline">{space.name}</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">{space.desc}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -116,7 +154,84 @@ const WellbeingSpaces = () => {
         title="Experience a Guided Tour"
         subtitle="Allow our wellness team to walk you through the spaces and help you discover the right path for your journey."
       >
-        <WireButton dark>Schedule a tour</WireButton>
+        <Dialog open={tourOpen} onOpenChange={setTourOpen}>
+          <DialogTrigger asChild>
+            <button className="border px-6 py-3 text-xs tracking-wider border-primary-foreground text-primary-foreground">
+              Schedule a tour
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-lg font-light">Schedule a Tour</DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground">
+                Share your details and a preferred date. Our wellness team will confirm your visit.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleTourSubmit} className="space-y-4 mt-2">
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+                <input
+                  type="text"
+                  required
+                  value={tourName}
+                  onChange={(e) => setTourName(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email</label>
+                <input
+                  type="email"
+                  required
+                  value={tourEmail}
+                  onChange={(e) => setTourEmail(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone Number</label>
+                <input
+                  type="tel"
+                  required
+                  value={tourPhone}
+                  onChange={(e) => setTourPhone(e.target.value)}
+                  className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Select Date</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      type="button"
+                      className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground flex items-center justify-between focus:outline-none"
+                    >
+                      <span className={tourDate ? "text-foreground" : "text-muted-foreground"}>
+                        {tourDate ? format(tourDate, "PPP") : "Pick a date"}
+                      </span>
+                      <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={tourDate}
+                      onSelect={setTourDate}
+                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <button
+                type="submit"
+                className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+              >
+                Schedule the Tour
+              </button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </WireSection>
 
       <WireSection

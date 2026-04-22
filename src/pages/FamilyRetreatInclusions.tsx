@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
   Clock,
   Users,
@@ -14,34 +14,13 @@ import {
   Sun,
   Moon,
   Sunrise,
-  CalendarDays,
-  LayoutGrid,
-  List,
-  Columns,
   Filter,
   Printer,
-  ChevronDown,
-  MapPin,
-  UserCheck,
-  Info,
-  X,
 } from "lucide-react";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
 import WireButton from "@/components/wireframe/WireButton";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/components/ui/collapsible";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
@@ -354,11 +333,12 @@ const activityCategories = [
 /*  AGE GROUPS                                                         */
 /* ------------------------------------------------------------------ */
 
-const ageGroups = ["All Ages", "Ages 4–6", "Ages 7–12", "Teens 13–17"] as const;
+const ageGroups = ["All Ages", "Ages 0–3", "Ages 4–6", "Ages 7–12", "Teens 13–17"] as const;
 type AgeGroup = (typeof ageGroups)[number];
 
 const ageGroupRanges: Record<AgeGroup, [number, number] | null> = {
   "All Ages": null,
+  "Ages 0–3": [0, 3],
   "Ages 4–6": [4, 6],
   "Ages 7–12": [7, 12],
   "Teens 13–17": [13, 17],
@@ -415,19 +395,6 @@ const periodLabel: Record<string, string> = {
 };
 
 /* ------------------------------------------------------------------ */
-/*  VIEW TYPES                                                         */
-/* ------------------------------------------------------------------ */
-
-const views = ["Timeline", "Paired Cards", "Activity Grid"] as const;
-type View = (typeof views)[number];
-
-const viewIcons: Record<View, React.ReactNode> = {
-  Timeline: <Columns className="w-4 h-4" />,
-  "Paired Cards": <LayoutGrid className="w-4 h-4" />,
-  "Activity Grid": <List className="w-4 h-4" />,
-};
-
-/* ------------------------------------------------------------------ */
 /*  POPUP DETAIL TYPE                                                  */
 /* ------------------------------------------------------------------ */
 
@@ -448,21 +415,7 @@ type PopupDetail = {
 /* ------------------------------------------------------------------ */
 
 const FamilyRetreatInclusions = () => {
-  const [activeView, setActiveView] = useState<View>("Timeline");
-  const [activeDay, setActiveDay] = useState(0);
   const [ageFilter, setAgeFilter] = useState<AgeGroup>("All Ages");
-  const [popupDetail, setPopupDetail] = useState<PopupDetail>(null);
-  const printRef = useRef<HTMLDivElement>(null);
-
-  const filteredSlots = schedule[activeDay].slots.filter((s) => slotMatchesAge(s, ageFilter));
-  const filteredPairs = pairedActivities.filter((p) => pairedMatchesAge(p, ageFilter));
-
-  /* Group slots by period for mobile accordion */
-  const slotsByPeriod = filteredSlots.reduce<Record<string, TimeSlot[]>>((acc, slot) => {
-    if (!acc[slot.period]) acc[slot.period] = [];
-    acc[slot.period].push(slot);
-    return acc;
-  }, {});
 
   const handlePrint = () => {
     const printWindow = window.open("", "_blank");
@@ -507,103 +460,37 @@ const FamilyRetreatInclusions = () => {
 
     const filterNote = ageFilter !== "All Ages" ? ` · Filtered: ${ageFilter}` : "";
 
-    let bodyContent = "";
-
-    if (activeView === "Timeline") {
-      bodyContent = `
-        <div class="header">
-          <small>Jayasom Family Retreat</small>
-          <h1>${schedule[activeDay].day} — ${schedule[activeDay].theme}</h1>
-          <h2>Parallel Programming Itinerary${filterNote}</h2>
-        </div>
-        <table>
-          <thead><tr><th>Time</th><th>Adults</th><th>Children</th></tr></thead>
-          <tbody>
-            ${filteredSlots.map((slot) => `
-              <tr class="${slot.shared ? "shared" : ""}">
-                <td class="time">${slot.time}</td>
-                <td>
-                  ${slot.adult.activity}
-                  <span class="category">${slot.adult.category}</span>
-                  ${slot.shared ? '<span class="shared-badge">Shared</span>' : ""}
-                </td>
-                <td>
-                  ${slot.child.activity}
-                  <span class="category">${slot.child.category}</span>
-                  ${!slot.shared ? `<span class="age">${slot.child.ageGroup}</span>` : ""}
-                </td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-        <div class="footer">
-          <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
-          <div class="legend"><span>■ Highlighted rows = Shared family time</span></div>
-        </div>`;
-    } else if (activeView === "Paired Cards") {
-      bodyContent = `
-        <div class="header">
-          <small>Jayasom Family Retreat</small>
-          <h1>While You Restore, They Explore</h1>
-          <h2>Paired Adult & Children Activities${filterNote}</h2>
-        </div>
-        ${filteredPairs.map((pair) => `
-          <div class="pair-card">
-            <div class="pair-header">
-              <span>${pair.category}</span>
-              <span>${pair.time}</span>
-            </div>
-            <div class="pair-body">
-              <div class="pair-side">
-                <div class="pair-label">While you enjoy</div>
-                <div class="pair-activity">${pair.adultActivity}</div>
-                <div class="pair-desc">${pair.adultDesc}</div>
-              </div>
-              <div class="pair-side">
-                <div class="pair-label">They experience</div>
-                <div class="pair-activity">${pair.childActivity}</div>
-                <div class="pair-desc">${pair.childDesc}</div>
-                <span class="age" style="margin-top: 8px;">${pair.childAgeGroup}</span>
-              </div>
+    const bodyContent = `
+      <div class="header">
+        <small>Jayasom Family Retreat</small>
+        <h1>Activities by Category${filterNote}</h1>
+        <h2>Complete Activity Guide — Adults & Children</h2>
+      </div>
+      <div class="cat-grid">
+        ${activityCategories.map((cat) => `
+          <div class="cat-card">
+            <div class="cat-name">${cat.name}</div>
+            <div class="cat-section-label">Adults</div>
+            <ul class="cat-list">
+              ${cat.adultActivities.map((a) => `<li>${a}</li>`).join("")}
+            </ul>
+            <div class="cat-divider">
+              <div class="cat-section-label">Children</div>
+              <ul class="cat-list">
+                ${cat.childActivities.map((a) => `<li>${a}</li>`).join("")}
+              </ul>
             </div>
           </div>
         `).join("")}
-        <div class="footer">
-          <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
-        </div>`;
-    } else {
-      bodyContent = `
-        <div class="header">
-          <small>Jayasom Family Retreat</small>
-          <h1>Activities by Category</h1>
-          <h2>Complete Activity Guide — Adults & Children</h2>
-        </div>
-        <div class="cat-grid">
-          ${activityCategories.map((cat) => `
-            <div class="cat-card">
-              <div class="cat-name">${cat.name}</div>
-              <div class="cat-section-label">Adults</div>
-              <ul class="cat-list">
-                ${cat.adultActivities.map((a) => `<li>${a}</li>`).join("")}
-              </ul>
-              <div class="cat-divider">
-                <div class="cat-section-label">Children</div>
-                <ul class="cat-list">
-                  ${cat.childActivities.map((a) => `<li>${a}</li>`).join("")}
-                </ul>
-              </div>
-            </div>
-          `).join("")}
-        </div>
-        <div class="footer">
-          <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
-        </div>`;
-    }
+      </div>
+      <div class="footer">
+        <p>All activities subject to availability. Children's activities supervised by certified specialists.</p>
+      </div>`;
 
     printWindow.document.write(`
       <html>
         <head>
-          <title>Jayasom Family Retreat — ${activeView}</title>
+          <title>Jayasom Family Retreat — Activities by Category</title>
           <style>${sharedStyles}</style>
         </head>
         <body>${bodyContent}</body>
@@ -611,35 +498,6 @@ const FamilyRetreatInclusions = () => {
     `);
     printWindow.document.close();
     printWindow.print();
-  };
-
-  const openSlotDetail = (slot: TimeSlot, type: "adult" | "child") => {
-    const data = type === "adult" ? slot.adult : slot.child;
-    setPopupDetail({
-      type,
-      activity: data.activity,
-      category: data.category,
-      icon: data.icon,
-      description: data.description,
-      instructor: data.instructor,
-      location: data.location,
-      time: slot.time,
-      ageGroup: type === "child" ? slot.child.ageGroup : undefined,
-    });
-  };
-
-  const openPairedDetail = (pair: (typeof pairedActivities)[number], type: "adult" | "child") => {
-    setPopupDetail({
-      type,
-      activity: type === "adult" ? pair.adultActivity : pair.childActivity,
-      category: pair.category,
-      icon: type === "adult" ? "heart" : "palette",
-      description: type === "adult" ? pair.adultDesc : pair.childDesc,
-      instructor: type === "adult" ? pair.adultInstructor : pair.childInstructor,
-      location: type === "adult" ? pair.adultLocation : pair.childLocation,
-      time: pair.time,
-      ageGroup: type === "child" ? pair.childAgeGroup : undefined,
-    });
   };
 
   return (
@@ -676,408 +534,47 @@ const FamilyRetreatInclusions = () => {
         </div>
       </WireSection>
 
-      {/* ── Controls: View Toggle + Age Filter + Print ── */}
-      <div className="px-8 pb-2">
-        <div className="max-w-6xl mx-auto space-y-4">
-          <p className="text-xs tracking-widest uppercase text-muted-foreground">Explore the programme</p>
+      {/* ── Activity Grid ── */}
+      <div className="animate-fade-in-up">
+        <WireSection title="Activities by Category">
+          <div className="flex items-center justify-between flex-wrap gap-4 mb-8 -mt-4">
+            <p className="text-sm leading-relaxed text-muted-foreground max-w-sm">
+              Browse all included activities organised by type. Each category offers tailored programming for both adults and children.
+            </p>
 
-          <div className="flex flex-wrap items-center gap-4">
-            {/* View toggle */}
-            <div className="inline-flex rounded-full bg-muted p-1.5 gap-1">
-              {views.map((view) => (
-                <button
-                  key={view}
-                  onClick={() => setActiveView(view)}
-                  className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm tracking-wide transition-all duration-200 ${
-                    activeView === view
-                      ? "bg-background text-foreground shadow-md font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  }`}
-                >
-                  {viewIcons[view]}
-                  <span className="hidden sm:inline">{view}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Age filter */}
-            <div className="flex items-center gap-2">
-              <Filter className="w-3.5 h-3.5 text-muted-foreground" />
-              <div className="inline-flex rounded-full bg-muted p-1 gap-1">
-                {ageGroups.map((group) => (
-                  <button
-                    key={group}
-                    onClick={() => setAgeFilter(group)}
-                    className={`px-3 py-1.5 rounded-full text-xs tracking-wide transition-all duration-200 ${
-                      ageFilter === group
-                        ? "bg-background text-foreground shadow-sm font-medium"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {group}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Print button */}
-            <button
-              onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-4 py-2 border border-border text-xs tracking-wide text-muted-foreground hover:text-foreground hover:border-foreground transition-all"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              Download as PDF
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Activity Detail Popup ── */}
-      <Dialog open={!!popupDetail} onOpenChange={(open) => !open && setPopupDetail(null)}>
-        <DialogContent className="max-w-md">
-          {popupDetail && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    popupDetail.type === "adult" ? "bg-foreground/10" : "bg-accent"
-                  }`}>
-                    {popupDetail.type === "adult"
-                      ? <User className="w-4 h-4 text-foreground" />
-                      : <Baby className="w-4 h-4 text-foreground" />
-                    }
-                  </div>
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">
-                    {popupDetail.type === "adult" ? "Adult Activity" : "Children's Activity"}
-                  </span>
-                </div>
-                <DialogTitle className="text-xl font-light">{popupDetail.activity}</DialogTitle>
-                <DialogDescription className="sr-only">Details about {popupDetail.activity}</DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-4 mt-2">
-                {/* Category + Time + Age */}
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-[10px] uppercase tracking-widest bg-accent px-3 py-1 rounded-full text-foreground">
-                    {popupDetail.category}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-widest bg-muted px-3 py-1 rounded-full text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {popupDetail.time}
-                  </span>
-                  {popupDetail.ageGroup && (
-                    <span className="text-[10px] uppercase tracking-widest bg-muted px-3 py-1 rounded-full text-muted-foreground">
-                      {popupDetail.ageGroup}
-                    </span>
-                  )}
-                </div>
-
-                {/* Description */}
-                <p className="text-sm text-muted-foreground leading-relaxed">{popupDetail.description}</p>
-
-                {/* Instructor */}
-                <div className="flex items-start gap-3 pt-3 border-t border-border">
-                  <UserCheck className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">Instructor</p>
-                    <p className="text-sm text-foreground">{popupDetail.instructor}</p>
-                  </div>
-                </div>
-
-                {/* Location */}
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-1">Location</p>
-                    <p className="text-sm text-foreground">{popupDetail.location}</p>
-                  </div>
+            <div className="flex items-center gap-4 flex-wrap">
+              {/* Age filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+                <div className="inline-flex rounded-full bg-muted p-1 gap-1">
+                  {ageGroups.map((group) => (
+                    <button
+                      key={group}
+                      onClick={() => setAgeFilter(group)}
+                      className={`px-3 py-1.5 rounded-full text-xs tracking-wide transition-all duration-200 ${
+                        ageFilter === group
+                          ? "bg-background text-foreground shadow-sm font-medium"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {group}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
 
-      {/* ── VIEW: Timeline ── */}
-      {activeView === "Timeline" && (
-        <div key="timeline" className="animate-fade-in-up" ref={printRef}>
-          {/* Day Tabs */}
-          <div className="px-8 pt-6">
-            <div className="max-w-6xl mx-auto flex gap-3 flex-wrap">
-              {schedule.map((day, i) => (
-                <button
-                  key={day.day}
-                  onClick={() => setActiveDay(i)}
-                  className={`flex items-center gap-2 px-5 py-3 border text-sm transition-all duration-200 ${
-                    activeDay === i
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
-                  }`}
-                >
-                  <CalendarDays className="w-4 h-4" />
-                  {day.day}
-                  <span className="text-xs opacity-70 hidden sm:inline">· {day.theme}</span>
-                </button>
-              ))}
+              {/* Print button */}
+              <button
+                onClick={handlePrint}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-border text-xs tracking-wide text-muted-foreground hover:text-foreground hover:border-foreground transition-all"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                Download as PDF
+              </button>
             </div>
           </div>
 
-          <WireSection>
-            {/* Age filter active indicator */}
-            {ageFilter !== "All Ages" && (
-              <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
-                <Info className="w-3.5 h-3.5" />
-                Showing activities suitable for <strong className="text-foreground">{ageFilter}</strong>
-                <button onClick={() => setAgeFilter("All Ages")} className="ml-1 underline hover:text-foreground">Clear filter</button>
-              </div>
-            )}
-
-            {/* === DESKTOP: Full side-by-side grid === */}
-            <div className="hidden md:block">
-              {/* Column Headers */}
-              <div className="grid grid-cols-[120px_1fr_56px_1fr] gap-0 mb-6">
-                <div />
-                <div className="flex items-center gap-2 pb-3 border-b border-border">
-                  <User className="w-4 h-4 text-foreground" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-foreground">Adults</span>
-                </div>
-                <div />
-                <div className="flex items-center gap-2 pb-3 border-b border-border">
-                  <Baby className="w-4 h-4 text-foreground" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-foreground">Children</span>
-                </div>
-              </div>
-
-              {/* Time Slots */}
-              {filteredSlots.map((slot, i) => (
-                <div
-                  key={slot.time}
-                  className={`grid grid-cols-[120px_1fr_56px_1fr] gap-0 ${i < filteredSlots.length - 1 ? "mb-1" : ""}`}
-                >
-                  {/* Time */}
-                  <div className="flex flex-col items-start justify-start pt-4 pr-3">
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      {periodIcon[slot.period]}
-                      <span className="text-xs font-medium">{slot.time.split(" – ")[0]}</span>
-                    </div>
-                    <span className="text-[10px] text-muted-foreground/60 ml-5">{slot.time.split(" – ")[1]}</span>
-                  </div>
-
-                  {/* Adult Activity — clickable */}
-                  <button
-                    onClick={() => openSlotDetail(slot, "adult")}
-                    className={`p-4 border-l-2 text-left transition-colors hover:bg-accent/40 ${
-                      slot.shared ? "border-l-foreground/40 bg-accent/50" : "border-l-foreground bg-transparent"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      {iconMap[slot.adult.icon]}
-                      <span className="text-sm font-medium text-foreground">{slot.adult.activity}</span>
-                    </div>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{slot.adult.category}</span>
-                    {slot.shared && (
-                      <span className="ml-2 text-[10px] uppercase tracking-wider text-foreground/60 bg-foreground/10 px-2 py-0.5 rounded-full">Shared</span>
-                    )}
-                  </button>
-
-                  {/* Connector */}
-                  <div className="flex items-center justify-center">
-                    {slot.shared ? (
-                      <div className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center">
-                        <Users className="w-3.5 h-3.5 text-foreground/60" />
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-0.5">
-                        <div className="w-px h-3 bg-border" />
-                        <div className="w-1.5 h-1.5 rounded-full bg-border" />
-                        <div className="w-px h-3 bg-border" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Child Activity — clickable */}
-                  <button
-                    onClick={() => openSlotDetail(slot, "child")}
-                    className={`p-4 border-l-2 text-left transition-colors hover:bg-accent/40 ${
-                      slot.shared ? "border-l-foreground/40 bg-accent/50" : "border-l-muted-foreground bg-transparent"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      {iconMap[slot.child.icon]}
-                      <span className="text-sm font-medium text-foreground">{slot.child.activity}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{slot.child.category}</span>
-                      {!slot.shared && (
-                        <span className="text-[10px] text-muted-foreground/70 bg-muted px-2 py-0.5 rounded-full">{slot.child.ageGroup}</span>
-                      )}
-                    </div>
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {/* === MOBILE: Accordion by period === */}
-            <div className="md:hidden space-y-2">
-              {Object.entries(slotsByPeriod).map(([period, slots]) => (
-                <Collapsible key={period} defaultOpen={period === "morning"}>
-                  <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 border border-border bg-accent/30 hover:bg-accent/50 transition-colors">
-                    <div className="flex items-center gap-2">
-                      {periodIcon[period]}
-                      <span className="text-sm font-medium text-foreground">{periodLabel[period]}</span>
-                      <span className="text-xs text-muted-foreground">· {slots.length} activities</span>
-                    </div>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform duration-200" />
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="border border-t-0 border-border divide-y divide-border">
-                      {slots.map((slot) => (
-                        <div key={slot.time} className={`p-4 ${slot.shared ? "bg-accent/30" : ""}`}>
-                          {/* Time */}
-                          <div className="flex items-center gap-1.5 mb-3">
-                            <Clock className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">{slot.time}</span>
-                            {slot.shared && (
-                              <span className="text-[10px] uppercase tracking-wider text-foreground/60 bg-foreground/10 px-2 py-0.5 rounded-full ml-auto">
-                                Shared
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Two stacked cards */}
-                          <div className="space-y-2">
-                            <button
-                              onClick={() => openSlotDetail(slot, "adult")}
-                              className="w-full text-left p-3 border border-border bg-background hover:bg-accent/30 transition-colors"
-                            >
-                              <div className="flex items-center gap-1.5 mb-1">
-                                <User className="w-3 h-3 text-muted-foreground" />
-                                <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Adult</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {iconMap[slot.adult.icon]}
-                                <span className="text-sm text-foreground">{slot.adult.activity}</span>
-                              </div>
-                            </button>
-
-                            {!slot.shared && (
-                              <button
-                                onClick={() => openSlotDetail(slot, "child")}
-                                className="w-full text-left p-3 border border-border bg-background hover:bg-accent/30 transition-colors"
-                              >
-                                <div className="flex items-center gap-1.5 mb-1">
-                                  <Baby className="w-3 h-3 text-muted-foreground" />
-                                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Child</span>
-                                  <span className="text-[10px] text-muted-foreground/70 bg-muted px-2 py-0.5 rounded-full ml-auto">{slot.child.ageGroup}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  {iconMap[slot.child.icon]}
-                                  <span className="text-sm text-foreground">{slot.child.activity}</span>
-                                </div>
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              ))}
-            </div>
-
-            {/* Legend */}
-            <div className="mt-8 pt-6 border-t border-border flex flex-wrap gap-6">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="w-4 h-0.5 bg-foreground" />
-                <span>Independent activity</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="w-4 h-0.5 bg-foreground/40" />
-                <span>Shared family time</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Info className="w-3.5 h-3.5" />
-                <span>Click any activity for details</span>
-              </div>
-            </div>
-          </WireSection>
-        </div>
-      )}
-
-      {/* ── VIEW: Paired Cards ("While you… they…") ── */}
-      {activeView === "Paired Cards" && (
-        <div key="paired" className="animate-fade-in-up">
-          <WireSection
-            title="While You Restore, They Explore"
-            subtitle="Every adult activity has a perfectly matched children's programme running at the same time. Here's how your day works in parallel."
-          >
-            {ageFilter !== "All Ages" && (
-              <div className="mb-6 flex items-center gap-2 text-xs text-muted-foreground">
-                <Info className="w-3.5 h-3.5" />
-                Showing activities suitable for <strong className="text-foreground">{ageFilter}</strong>
-                <button onClick={() => setAgeFilter("All Ages")} className="ml-1 underline hover:text-foreground">Clear filter</button>
-              </div>
-            )}
-            <div className="space-y-6">
-              {filteredPairs.map((pair) => (
-                <div key={pair.adultActivity} className="border border-border overflow-hidden">
-                  {/* Header bar */}
-                  <div className="bg-accent/60 px-6 py-3 flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-widest text-foreground">{pair.category}</span>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Clock className="w-3.5 h-3.5" />
-                      {pair.time}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2">
-                    {/* Adult side — clickable */}
-                    <button
-                      onClick={() => openPairedDetail(pair, "adult")}
-                      className="p-6 md:border-r border-b md:border-b-0 border-border text-left hover:bg-accent/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <User className="w-4 h-4 text-foreground" />
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">While you enjoy</p>
-                      </div>
-                      <h4 className="text-base font-medium text-foreground mt-2 mb-2">{pair.adultActivity}</h4>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{pair.adultDesc}</p>
-                    </button>
-
-                    {/* Child side — clickable */}
-                    <button
-                      onClick={() => openPairedDetail(pair, "child")}
-                      className="p-6 text-left hover:bg-accent/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <Baby className="w-4 h-4 text-foreground" />
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">They experience</p>
-                      </div>
-                      <h4 className="text-base font-medium text-foreground mt-2 mb-2">{pair.childActivity}</h4>
-                      <p className="text-xs text-muted-foreground leading-relaxed mb-2">{pair.childDesc}</p>
-                      <span className="text-[10px] text-muted-foreground/70 bg-muted px-2 py-1 rounded-full">{pair.childAgeGroup}</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {filteredPairs.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  <p className="text-sm">No paired activities match the selected age group.</p>
-                  <button onClick={() => setAgeFilter("All Ages")} className="mt-2 text-xs underline hover:text-foreground">Show all activities</button>
-                </div>
-              )}
-            </div>
-          </WireSection>
-        </div>
-      )}
-
-      {/* ── VIEW: Activity Grid ── */}
-      {activeView === "Activity Grid" && (
-        <div key="grid" className="animate-fade-in-up">
-          <WireSection
-            title="Activities by Category"
-            subtitle="Browse all included activities organised by type. Each category offers tailored programming for both adults and children."
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {activityCategories.map((cat) => (
                 <div key={cat.name} className="border border-border p-6">
                   <div className="flex items-center gap-3 mb-5">
@@ -1120,8 +617,7 @@ const FamilyRetreatInclusions = () => {
               ))}
             </div>
           </WireSection>
-        </div>
-      )}
+      </div>
 
       {/* ── Sample Day Visual ── */}
       <WireSection label="A Glimpse of Your Day" title="One Day, Two Journeys" subtitle="See how a typical family retreat day unfolds — adults and children on their own paths, reconnecting for shared moments.">
@@ -1210,7 +706,6 @@ const FamilyRetreatInclusions = () => {
       {/* ── CTA ── */}
       <WireSection dark title="Design Your Family's Retreat" subtitle="Our wellness advisors will personalise the programme for every member of your family — from toddlers to grandparents. Tell us about your family and we'll craft the perfect parallel itinerary.">
         <div className="flex flex-wrap gap-4">
-          <WireButton dark>Speak with a family advisor</WireButton>
           <WireButton dark>Download sample itinerary</WireButton>
         </div>
       </WireSection>

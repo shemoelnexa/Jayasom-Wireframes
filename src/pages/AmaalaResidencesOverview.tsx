@@ -1,9 +1,36 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
 import WireButton from "@/components/wireframe/WireButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { residences } from "@/data/residences";
 
-const AmaalaResidencesOverview = () => (
+const AmaalaResidencesOverview = () => {
+  const [viewingOpen, setViewingOpen] = useState(false);
+  const [viewingName, setViewingName] = useState("");
+  const [viewingPhone, setViewingPhone] = useState("");
+  const [viewingEmail, setViewingEmail] = useState("");
+  const [viewingMessage, setViewingMessage] = useState("");
+
+  const handleViewingSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setViewingOpen(false);
+    setViewingName("");
+    setViewingPhone("");
+    setViewingEmail("");
+    setViewingMessage("");
+  };
+
+  return (
   <WireLayout>
     <div className="relative">
       <WireImage className="h-[500px] w-full" label="Hero Image — Amaala Residences" />
@@ -30,20 +57,16 @@ const AmaalaResidencesOverview = () => (
 
     <WireSection label="The Collection" title="Residence Types" subtitle="A carefully curated selection of homes ranging from intimate apartments to expansive beachfront villas, each designed with wellness at its core.">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        {[
-          { type: "One-Bedroom Apartment", size: "From 95 sqm", price: "From $X.XM" },
-          { type: "Two-Bedroom Penthouse", size: "From 180 sqm", price: "From $X.XM" },
-          { type: "Three-Bedroom Villa", size: "From 320 sqm", price: "From $X.XM" },
-        ].map((res) => (
-          <div key={res.type} className="border border-border">
-            <WireImage className="h-56" label={res.type} />
+        {residences.map((res) => (
+          <Link to={`/amaala-residences/${res.id}`} key={res.id} className="border border-border group">
+            <WireImage className="h-56" label={res.name} />
             <div className="p-5">
-              <h4 className="text-sm font-bold mb-1 text-foreground">{res.type}</h4>
+              <h4 className="text-sm font-bold mb-1 text-foreground group-hover:underline">{res.name}</h4>
               <p className="text-xs text-muted-foreground mb-1">{res.size}</p>
-              <p className="text-xs text-muted-foreground mb-4">{res.price}</p>
+              <p className="text-xs text-muted-foreground mb-4">{res.priceFrom}</p>
               <WireButton>View details →</WireButton>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </WireSection>
@@ -68,13 +91,76 @@ const AmaalaResidencesOverview = () => (
     </WireSection>
 
     <WireSection dark title="Request a Private Viewing" subtitle="Our sales team can arrange a personalised presentation and virtual tour of available residences.">
-      <WireButton dark>Schedule a viewing</WireButton>
+      <Dialog open={viewingOpen} onOpenChange={setViewingOpen}>
+        <DialogTrigger asChild>
+          <button className="border px-6 py-3 text-xs tracking-wider border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-foreground transition-colors">
+            Schedule a viewing
+          </button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-light">Schedule a Private Viewing</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Share your details and our sales team will be in touch to arrange a personalised presentation and tour.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleViewingSubmit} className="space-y-4 mt-2">
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+              <input
+                type="text"
+                required
+                value={viewingName}
+                onChange={(e) => setViewingName(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone Number</label>
+              <input
+                type="tel"
+                required
+                value={viewingPhone}
+                onChange={(e) => setViewingPhone(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email</label>
+              <input
+                type="email"
+                required
+                value={viewingEmail}
+                onChange={(e) => setViewingEmail(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Message</label>
+              <textarea
+                rows={3}
+                value={viewingMessage}
+                onChange={(e) => setViewingMessage(e.target.value)}
+                placeholder="Tell us what you'd like to know…"
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none resize-none"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+            >
+              Request Viewing
+            </button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </WireSection>
 
     <WireSection title="Location" subtitle="Situated at the southern wellness core of Amaala's Triple Bay, Jayasom residences offer direct access to pristine beaches, coral reefs, and desert landscapes.">
       <WireImage className="h-80" label="Location Map" />
     </WireSection>
   </WireLayout>
-);
+  );
+};
 
 export default AmaalaResidencesOverview;

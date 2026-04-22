@@ -1,9 +1,23 @@
 import { useState } from "react";
-import { Baby, Headphones, User, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Baby, CalendarIcon, Headphones, Minus, Plus, User, Users } from "lucide-react";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
-import WireButton from "@/components/wireframe/WireButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 const tabs = ["Kids", "Teens", "Adults", "Family"] as const;
 type Tab = (typeof tabs)[number];
@@ -98,6 +112,31 @@ const FamiliesWellbeing = () => {
   const [activeTab, setActiveTab] = useState<Tab>("Family");
   const content = tabContent[activeTab];
 
+  const [planOpen, setPlanOpen] = useState(false);
+  const [planName, setPlanName] = useState("");
+  const [planPhone, setPlanPhone] = useState("");
+  const [planEmail, setPlanEmail] = useState("");
+  const [planAdults, setPlanAdults] = useState(2);
+  const [planChildren, setPlanChildren] = useState(0);
+  const [planRange, setPlanRange] = useState<DateRange | undefined>(undefined);
+
+  const handlePlanSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPlanOpen(false);
+    setPlanName("");
+    setPlanPhone("");
+    setPlanEmail("");
+    setPlanAdults(2);
+    setPlanChildren(0);
+    setPlanRange(undefined);
+  };
+
+  const rangeLabel = planRange?.from
+    ? planRange.to
+      ? `${format(planRange.from, "LLL d, y")} — ${format(planRange.to, "LLL d, y")}`
+      : format(planRange.from, "LLL d, y")
+    : "Pick a date range";
+
   return (
     <WireLayout>
       <div className="relative">
@@ -151,18 +190,143 @@ const FamiliesWellbeing = () => {
         <WireSection title={`${activeTab === "Family" ? "Family" : activeTab} Retreat Packages`}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {content.packages.map((pkg) => (
-              <div key={pkg.name} className="border border-border p-6">
-                <h4 className="text-sm font-bold mb-1 text-foreground">{pkg.name}</h4>
+              <Link
+                key={pkg.name}
+                to={`/retreats-v2/${slugify(pkg.name)}`}
+                className="border border-border p-6 group block"
+              >
+                <h4 className="text-sm font-bold mb-1 text-foreground group-hover:underline">{pkg.name}</h4>
                 <p className="text-xs text-muted-foreground mb-3">{pkg.duration}</p>
                 <p className="text-xs text-muted-foreground leading-relaxed mb-4">{pkg.desc}</p>
-                <WireButton>Learn more →</WireButton>
-              </div>
+                <span className="border border-foreground px-6 py-3 text-xs tracking-wider text-foreground inline-block">Learn more →</span>
+              </Link>
             ))}
           </div>
         </WireSection>
 
         <WireSection dark title={content.cta.title} subtitle={content.cta.subtitle}>
-          <WireButton dark>{content.cta.button}</WireButton>
+          <Dialog open={planOpen} onOpenChange={setPlanOpen}>
+            <DialogTrigger asChild>
+              <button className="border px-6 py-3 text-xs tracking-wider border-primary-foreground text-primary-foreground">
+                {content.cta.button}
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-light">{content.cta.button}</DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  Share your details and travel plans. Our wellness advisors will design a retreat around you.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handlePlanSubmit} className="space-y-4 mt-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={planName}
+                    onChange={(e) => setPlanName(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    value={planPhone}
+                    onChange={(e) => setPlanPhone(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={planEmail}
+                    onChange={(e) => setPlanEmail(e.target.value)}
+                    className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="border border-border p-3">
+                    <p className="text-[10px] tracking-widest uppercase text-muted-foreground mb-2">Adults</p>
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setPlanAdults(Math.max(1, planAdults - 1))}
+                        className="w-7 h-7 border border-border text-foreground flex items-center justify-center hover:bg-muted"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="text-sm text-foreground">{planAdults}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPlanAdults(planAdults + 1)}
+                        className="w-7 h-7 border border-border text-foreground flex items-center justify-center hover:bg-muted"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="border border-border p-3">
+                    <p className="text-[10px] tracking-widest uppercase text-muted-foreground mb-2">Children</p>
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setPlanChildren(Math.max(0, planChildren - 1))}
+                        className="w-7 h-7 border border-border text-foreground flex items-center justify-center hover:bg-muted"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="text-sm text-foreground">{planChildren}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPlanChildren(planChildren + 1)}
+                        className="w-7 h-7 border border-border text-foreground flex items-center justify-center hover:bg-muted"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Select Availability</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground flex items-center justify-between focus:outline-none"
+                      >
+                        <span className={planRange?.from ? "text-foreground" : "text-muted-foreground"}>{rangeLabel}</span>
+                        <CalendarIcon className="w-4 h-4 text-muted-foreground" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        selected={planRange}
+                        onSelect={setPlanRange}
+                        numberOfMonths={2}
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+                >
+                  Submit
+                </button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </WireSection>
       </div>
     </WireLayout>

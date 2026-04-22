@@ -1,14 +1,36 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import WireLayout from "@/components/wireframe/WireLayout";
 import WireImage from "@/components/wireframe/WireImage";
 import WireSection from "@/components/wireframe/WireSection";
-import WireButton from "@/components/wireframe/WireButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { advisors } from "@/data/advisors";
 import { Globe } from "lucide-react";
 
 const WellnessAdvisorProfile = () => {
   const { id } = useParams();
   const advisor = advisors.find((a) => a.id === id) || advisors[0];
+
+  const [consultOpen, setConsultOpen] = useState(false);
+  const [consultName, setConsultName] = useState("");
+  const [consultPhone, setConsultPhone] = useState("");
+  const [consultEmail, setConsultEmail] = useState("");
+  const [consultMessage, setConsultMessage] = useState("");
+
+  const handleConsultSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setConsultOpen(false);
+    setConsultName("");
+    setConsultPhone("");
+    setConsultEmail("");
+    setConsultMessage("");
+  };
 
   return (
     <WireLayout>
@@ -42,7 +64,12 @@ const WellnessAdvisorProfile = () => {
               ))}
             </div>
 
-            <WireButton>Book a consultation with {advisor.name.split(" ")[0]}</WireButton>
+            <button
+              onClick={() => setConsultOpen(true)}
+              className="border px-6 py-3 text-xs tracking-wider border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors"
+            >
+              Book a consultation with {advisor.name.split(" ")[0]}
+            </button>
           </div>
         </div>
       </section>
@@ -59,8 +86,73 @@ const WellnessAdvisorProfile = () => {
       </WireSection>
 
       <WireSection dark title="Begin Your Wellness Journey" subtitle="Schedule a complimentary consultation and discover how personalised guidance can transform your retreat experience.">
-        <WireButton dark>Request consultation</WireButton>
+        <button
+          onClick={() => setConsultOpen(true)}
+          className="border px-6 py-3 text-xs tracking-wider border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-foreground transition-colors"
+        >
+          Request consultation
+        </button>
       </WireSection>
+
+      {/* Shared consultation dialog */}
+      <Dialog open={consultOpen} onOpenChange={setConsultOpen}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-light">Request a Consultation</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Share your details and {advisor.name.split(" ")[0]}'s team will be in touch to arrange a time that suits you.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleConsultSubmit} className="space-y-4 mt-2">
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Name</label>
+              <input
+                type="text"
+                required
+                value={consultName}
+                onChange={(e) => setConsultName(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Phone Number</label>
+              <input
+                type="tel"
+                required
+                value={consultPhone}
+                onChange={(e) => setConsultPhone(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Email</label>
+              <input
+                type="email"
+                required
+                value={consultEmail}
+                onChange={(e) => setConsultEmail(e.target.value)}
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] tracking-widest uppercase text-muted-foreground">Message</label>
+              <textarea
+                rows={3}
+                value={consultMessage}
+                onChange={(e) => setConsultMessage(e.target.value)}
+                placeholder="Tell us what you'd like to discuss…"
+                className="w-full border border-border px-3 py-2 text-sm bg-background text-foreground focus:outline-none resize-none"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full border border-foreground bg-foreground text-background px-6 py-3 text-xs tracking-wider hover:bg-background hover:text-foreground transition-colors"
+            >
+              Request Consultation
+            </button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </WireLayout>
   );
 };
