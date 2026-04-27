@@ -31,6 +31,7 @@ import TreatmentDetails from "./pages/TreatmentDetails.tsx";
 import RetreatDetailsV2 from "./pages/RetreatDetailsV2.tsx";
 import RetreatDetailsAsAPair from "./pages/RetreatDetailsAsAPair.tsx";
 import FamilyRetreatInclusions from "./pages/FamilyRetreatInclusions.tsx";
+import WireframeGenerator from "./pages/WireframeGenerator.tsx";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
           {/* REMOVED: DigitalBrochure route — to restore, uncomment this route and its import at the top of the file. */}
           {/* <Route path="/digital-brochure" element={<DigitalBrochure />} /> */}
           <Route path="/family-retreat-inclusions" element={<FamilyRetreatInclusions />} />
+          <Route path="/wireframe-generator" element={<WireframeGenerator />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -29,7 +29,12 @@ const Index = () => (
   <WireLayout>
     <section className="px-8 py-16">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-light mb-3 text-foreground">Jayasom — Wireframe Pages</h1>
+        <div className="flex items-start justify-between mb-3">
+          <h1 className="text-3xl font-light text-foreground">Jayasom — Wireframe Pages</h1>
+          <Link to="/wireframe-generator" className="text-xs border border-foreground px-3 py-2 hover:bg-foreground hover:text-background transition-colors">
+            Open the generator →
+          </Link>
+        </div>
         <p className="text-sm text-muted-foreground mb-10">{pages.length} wireframe page layouts for the Jayasom Amaala wellness destination website.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {pages.map((page, i) => (
