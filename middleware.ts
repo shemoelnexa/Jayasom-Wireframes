@@ -88,8 +88,12 @@ async function checkAuth(req: Request): Promise<boolean> {
 
 export const config = {
   matcher: [
-    // Skip Vercel internals and static assets — gate everything else.
-    '/((?!_next/static|_next/image|favicon.ico|robots.txt|.*\\..*).*)',
+    // Gate ONLY the wireframe generator + its API + the login endpoint.
+    // Existing wireframe demo pages (/, /wellbeing-spaces, etc.) stay public.
+    '/wireframe-generator',
+    '/wireframe-generator/:path*',
+    '/api/generate',
+    '/__auth',
   ],
 };
 
@@ -115,7 +119,7 @@ export default async function middleware(req: Request) {
     return new Response(null, {
       status: 302,
       headers: {
-        'Location': '/',
+        'Location': '/wireframe-generator',
         'Set-Cookie': `${COOKIE_NAME}=${validHash}; Path=/; Max-Age=${COOKIE_MAX_AGE}; HttpOnly; SameSite=Lax; Secure`,
       },
     });
