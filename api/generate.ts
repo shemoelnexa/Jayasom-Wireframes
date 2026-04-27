@@ -183,7 +183,7 @@ export default async function handler(req: Request): Promise<Response> {
     if (status === 401 || status === 403) category = 'auth';
     else if (status === 429) category = 'anthropic-rate-limit';
     else if (status === 529 || status === 503) category = 'anthropic-overloaded';
-    else if (error.message?.includes('budget')) category = 'budget-exhausted';
+    else if (error.message?.includes('budget') || error.message?.includes('credit balance')) category = 'budget-exhausted';
 
     return new Response(JSON.stringify({
       error: 'generation-failed',

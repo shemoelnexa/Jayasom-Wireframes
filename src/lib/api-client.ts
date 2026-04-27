@@ -69,7 +69,7 @@ export function describeError(err: GenerateResponseError): string {
     case 'anthropic-overloaded':
       return 'Anthropic API is overloaded. Try again in a moment.';
     case 'budget-exhausted':
-      return 'Monthly budget reached — contact admin.';
+      return 'Anthropic credit balance is too low. Add a payment method (or top up) at console.anthropic.com → Plans & Billing, then try again.';
     case 'malformed-response':
       return 'Generated copy but the HTML wasn\'t well-formed. Retry?';
     case 'invalid-request':
