@@ -11,8 +11,8 @@ import {
   section_patterns_md,
   content_inference_md,
   output_template_html,
-} from '../src/lib/skill-content';
-import { detectContentCues, buildSystemPrompt } from '../src/lib/smart-skill-loader';
+} from '../src/lib/skill-content.js';
+import { detectContentCues, buildSystemPrompt } from '../src/lib/smart-skill-loader.js';
 
 export const config = {
   runtime: 'edge',
