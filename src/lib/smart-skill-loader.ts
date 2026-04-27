@@ -64,7 +64,9 @@ export function detectContentCues(text: string): ContentCues {
 // Returns the section heading + its body content up to the next ## heading.
 function extractSection(md: string, sectionHeading: string): string {
   const lines = md.split('\n');
-  const startIdx = lines.findIndex((l) => l.includes(sectionHeading));
+  // Anchor to actual ## headings — match lines starting with "## " followed by the heading text
+  const headingPattern = new RegExp(`^##\\s+${sectionHeading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+  const startIdx = lines.findIndex((l) => headingPattern.test(l));
   if (startIdx === -1) return '';
   const nextIdx = lines.slice(startIdx + 1).findIndex((l) => /^## /.test(l));
   const endIdx = nextIdx === -1 ? lines.length : startIdx + 1 + nextIdx;

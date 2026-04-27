@@ -45,14 +45,45 @@ function loginResponse(error?: string): Response {
   });
 }
 
-function checkAuth(req: Request): boolean {
+// Constant-time string comparison. Returns true iff a and b are exactly equal.
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    // Compare anyway to avoid leaking the length difference via timing
+    let dummy = 0;
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
+      dummy |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return false;
+  }
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+async function sha256Hex(s: string): Promise<string> {
+  const data = new TextEncoder().encode(s);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function passwordHash(): Promise<string | null> {
+  const expected = process.env.APP_PASSWORD;
+  if (!expected) return null;
+  return await sha256Hex(expected);
+}
+
+async function checkAuth(req: Request): Promise<boolean> {
   const cookieHeader = req.headers.get('cookie') ?? '';
   const cookies = Object.fromEntries(
     cookieHeader.split(';').map((c) => c.trim().split('=', 2)).filter((p) => p.length === 2)
   );
-  const expected = process.env.APP_PASSWORD;
-  if (!expected) return false;
-  return cookies[COOKIE_NAME] === expected;
+  const cookieValue = cookies[COOKIE_NAME];
+  if (!cookieValue) return false;
+  const validHash = await passwordHash();
+  if (!validHash) return false;
+  return timingSafeEqual(cookieValue, validHash);
 }
 
 export const config = {
@@ -73,19 +104,24 @@ export default async function middleware(req: Request) {
     if (!expected) {
       return new Response('Server not configured', { status: 500 });
     }
-    if (typeof password !== 'string' || password !== expected) {
+    if (typeof password !== 'string') {
+      return loginResponse('Wrong password.');
+    }
+    const submittedHash = await sha256Hex(password);
+    const validHash = await sha256Hex(expected);
+    if (!timingSafeEqual(submittedHash, validHash)) {
       return loginResponse('Wrong password.');
     }
     return new Response(null, {
       status: 302,
       headers: {
         'Location': '/',
-        'Set-Cookie': `${COOKIE_NAME}=${encodeURIComponent(expected)}; Path=/; Max-Age=${COOKIE_MAX_AGE}; HttpOnly; SameSite=Lax; Secure`,
+        'Set-Cookie': `${COOKIE_NAME}=${validHash}; Path=/; Max-Age=${COOKIE_MAX_AGE}; HttpOnly; SameSite=Lax; Secure`,
       },
     });
   }
 
-  if (checkAuth(req)) return next();
+  if (await checkAuth(req)) return next();
 
   // For API requests, return 401 JSON
   if (url.pathname.startsWith('/api/')) {

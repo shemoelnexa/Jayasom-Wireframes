@@ -49,13 +49,16 @@ function checkRateLimit(ip: string): { ok: boolean; retryAfterMin?: number } {
 }
 
 function extractHtmlAndConfirmation(response: string): { html: string; confirmation: string } {
-  const docStart = response.indexOf('<!doctype');
-  const docEnd = response.lastIndexOf('</html>');
-  if (docStart === -1 || docEnd === -1) {
+  const docStartMatch = response.match(/<!doctype/i);
+  const docEndMatch = response.match(/<\/html>/i);
+  if (!docStartMatch || !docEndMatch || docStartMatch.index === undefined) {
     return { html: '', confirmation: response };
   }
-  const html = response.slice(docStart, docEnd + '</html>'.length);
-  const confirmation = (response.slice(0, docStart) + response.slice(docEnd + '</html>'.length)).trim();
+  const docStart = docStartMatch.index;
+  const docEnd = response.toLowerCase().lastIndexOf('</html>');
+  const docEndPos = docEnd + '</html>'.length;
+  const html = response.slice(docStart, docEndPos);
+  const confirmation = (response.slice(0, docStart) + response.slice(docEndPos)).trim();
   return { html, confirmation };
 }
 
@@ -66,7 +69,13 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  // Vercel sets x-real-ip to the verified client IP. Fall back to the rightmost
+  // (most recent / trusted) IP from x-forwarded-for, never the first (which is
+  // attacker-controlled).
+  const ip =
+    req.headers.get('x-real-ip') ??
+    req.headers.get('x-forwarded-for')?.split(',').pop()?.trim() ??
+    'unknown';
   const rate = checkRateLimit(ip);
   if (!rate.ok) {
     return new Response(JSON.stringify({
@@ -119,6 +128,22 @@ export default async function handler(req: Request): Promise<Response> {
   const anthropic = new Anthropic({ apiKey });
 
   try {
+    // Add cache_control to the SECOND-TO-LAST user message so conversation
+    // history through that point is cached. The latest message stays uncached
+    // (it's the new content for this turn).
+    const apiMessages = messages.map((m, i, arr) => {
+      // Find the second-to-last user message and add a cache breakpoint there
+      const userIndices = arr.map((msg, idx) => msg.role === 'user' ? idx : -1).filter((idx) => idx !== -1);
+      const cacheTargetIdx = userIndices.length >= 2 ? userIndices[userIndices.length - 2] : -1;
+      if (i === cacheTargetIdx) {
+        return {
+          role: m.role,
+          content: [{ type: 'text' as const, text: m.content, cache_control: { type: 'ephemeral' as const } }],
+        };
+      }
+      return { role: m.role, content: m.content };
+    });
+
     const result = await anthropic.messages.create({
       model,
       max_tokens: 16000,
@@ -129,7 +154,7 @@ export default async function handler(req: Request): Promise<Response> {
           cache_control: { type: 'ephemeral' },
         },
       ],
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      messages: apiMessages as Parameters<typeof anthropic.messages.create>[0]['messages'],
     });
 
     const text = result.content
